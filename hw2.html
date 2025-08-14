@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="JavaScript Homework 2 at CSM">
+  <title>Homework 2 – Coming Soon</title>
+  <style>
+    :root {
+      --btn: #4b3f4e; /* dark purply grey */
+      --btnHover: #6a5d6e;
+    }
+    html, body { height: 100%; margin: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: #000;
+      background-color: #ffffff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+
+      background-image: url("desk-art.png");
+      background-repeat: no-repeat;
+      background-position: right bottom;
+      background-size: 640px auto;
+      background-attachment: fixed;
+    }
+
+    .card {
+      background: rgba(0,0,0,.05);
+      padding: 20px 24px;
+      border-radius: 8px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: var(--btn);
+      color: #fff;
+      text-decoration: none;
+      transition: background-color .2s;
+    }
+
+    a:hover {
+      background: var(--btnHover);
+    }
+
+    /* Responsive background image */
+    @media (max-width: 1024px) {
+      body {
+        background-size: 500px auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-size: 350px auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        background-size: 250px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Homework 2</h1>
+    <p>Coming soon…</p>
+    <a href="index.html">Back to Main Page</a>
+  </div>
+</body>
+</html>

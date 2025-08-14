@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="JavaScript course assignments at CSM">
+  <title>JavaScript Course Assignments – CSM</title>
+  <style>
+    :root {
+      --btn: #4b3f4e; /* dark purply grey */
+      --btnHover: #6a5d6e; /* lighter on hover */
+    }
+    html, body { height: 100%; margin: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: #000;
+      background-color: #ffffff; /* match image background */
+      padding: 24px;
+
+      /* Background image in lower right corner */
+      background-image: url("desk-art.png");
+      background-repeat: no-repeat;
+      background-position: right bottom;
+      background-size: 640px auto; /* default size */
+      background-attachment: fixed;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 16px;
+    }
+
+    .links a {
+      display: inline-block;
+      margin: 6px 6px 0 0;
+      padding: 10px 14px;
+      background: var(--btn);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color .2s ease;
+    }
+
+    .links a:hover {
+      background: var(--btnHover);
+    }
+
+    /* Responsive image size */
+    @media (max-width: 1024px) {
+      body {
+        background-size: 500px auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-size: 350px auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        background-size: 250px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>CIS 114 Assignments</h1>
+  <div class="links">
+    <a href="hw2.html">Homework 2</a>
+    <a href="#">Homework 3</a>
+    <a href="#">Homework 4</a>
+    <a href="#">Homework 5</a>
+    <a href="#">Homework 6</a>
+    <a href="#">Homework 7</a>
+    <a href="#">Homework 8</a>
+  </div>
+</body>
+</html>
