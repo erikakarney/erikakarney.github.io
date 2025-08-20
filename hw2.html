@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="description" content="JavaScript Homework 2 at CSM">
+  <meta charset="UTF-8" />
+  <meta name="description" content="JavaScript Homework 2 at CSM" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Homework 2 – Coming Soon</title>
   <style>
     :root {
-      --btn: #4b3f4e; /* dark purply grey */
+      --btn: #4b3f4e;
       --btnHover: #6a5d6e;
+      --bgSize: 640px auto;
     }
     html, body { height: 100%; margin: 0; }
 
@@ -19,18 +21,30 @@
       place-items: center;
       text-align: center;
       padding: 24px;
-
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* Blurred background layer */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
       background-image: url("desk-art.png");
       background-repeat: no-repeat;
       background-position: right bottom;
-      background-size: 640px auto;
-      background-attachment: fixed;
+      background-size: var(--bgSize);
+      filter: blur(1px) saturate(0.99);
+      transform: scale(1.02);
+      z-index: -1;
+      pointer-events: none;
     }
 
     .card {
-      background: rgba(0,0,0,.05);
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(2px);
       padding: 20px 24px;
       border-radius: 8px;
+      max-width: 520px;
     }
 
     a {
@@ -43,36 +57,21 @@
       text-decoration: none;
       transition: background-color .2s;
     }
+    a:hover { background: var(--btnHover); }
 
-    a:hover {
-      background: var(--btnHover);
-    }
-
-    /* Responsive background image */
-    @media (max-width: 1024px) {
-      body {
-        background-size: 500px auto;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        background-size: 350px auto;
-      }
-    }
-
-    @media (max-width: 480px) {
-      body {
-        background-size: 250px auto;
-      }
-    }
+    /* Responsive background size */
+    @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
+    @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
+    @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
   </style>
 </head>
 <body>
-  <div class="card">
+  <main class="card">
     <h1>Homework 2</h1>
     <p>Coming soon…</p>
-    <a href="index.html">Back to Main Page</a>
-  </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Back to Main Page</a>
+    </nav>
+  </main>
 </body>
 </html>
