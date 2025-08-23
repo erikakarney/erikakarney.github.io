@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="CIS 114 - Homework 2 Extra Credit (Currency Converter)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HW2 - Extra Credit (Currency Converter)</title>
+  <style>
+    :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
+    html, body { height:100%; margin:0; }
+    body {
+      font-family: Arial, sans-serif;
+      color: #000;
+      background: #fff;
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("desk-art.png");
+      background-repeat: no-repeat;
+      background-position: right bottom;
+      background-size: var(--bgSize);
+      z-index: -2;
+      pointer-events: none;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.18);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 6px 8px 16px 0;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: var(--btn);
+      color: #fff;
+      text-decoration: none;
+      transition: background-color .2s;
+    }
+    nav a:hover { background: var(--btnHover); }
+
+    .wrap {
+      background: rgba(255,255,255,.8);
+      padding: 16px;
+      border-radius: 10px;
+      max-width: 760px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+    thead th { text-align: left; background: #fafafa; }
+    td.rate, td.value { text-align: right; }
+    input.value {
+      width: 100%;
+      text-align: right;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      padding: 0;
+      outline: none;
+    }
+    input.value[readonly] { cursor: not-allowed; }
+    #usd {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-align: right;
+    }
+    #usd:focus {
+      outline: 2px solid #6aa2ff;
+      background: #eef5ff;
+      border-color: #6aa2ff;
+    }
+
+    .hint { font-size: .9rem; color: #444; margin-top: 10px; }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 12px;
+      font-size: 0.85rem;
+      color: #555;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
+    @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
+    @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
+  </style>
+</head>
+<body>
+  <h1>Homework 2 – Extra Credit</h1>
+  <p>Enter a USD amount. Converted values appear to 2 decimals and align to the right.</p>
+
+  <nav aria-label="Part navigation">
+    <a href="hw2.html">← HW2 Home</a>
+    <a href="hw2-part1.html">Part 1</a>
+    <a href="hw2-part2.html">Part 2</a>
+    <a href="index.html">Homework 1 (Course Home)</a>
+  </nav>
+
+  <div class="wrap">
+    <table aria-label="Currency conversion table">
+      <thead>
+        <tr>
+          <th>Currency</th>
+          <th class="rate">Rate</th>
+          <th class="value">Value</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <!-- rows injected by JS -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><strong>Enter Amount of U.S. Dollars</strong></td>
+          <td></td>
+          <td class="value">
+            <input id="usd" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" aria-label="U.S. Dollars" />
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    <p class="hint">Rates are for 1 USD (June 2024). Values update as you type.</p>
+  </div>
+
+  <script>
+    const rates = [
+      { name: 'Euro', rate: 0.92 },
+      { name: 'Canadian Dollar', rate: 1.38 },
+      { name: 'Hong Kong Dollar', rate: 7.81 },
+      { name: 'Japanese Yen', rate: 156.73 },
+      { name: 'Mexican Peso', rate: 18.41 },
+    ];
+
+    const tbody = document.getElementById('tbody');
+
+    // Build rows
+    for (const {name, rate} of rates) {
+      const tr = document.createElement('tr');
+
+      const tdName = document.createElement('td');
+      tdName.textContent = name;
+
+      const tdRate = document.createElement('td');
+      tdRate.className = 'rate';
+      tdRate.textContent = rate.toFixed(2);
+
+      const tdValue = document.createElement('td');
+      tdValue.className = 'value';
+      const out = document.createElement('input');
+      out.className = 'value';
+      out.type = 'text';
+      out.readOnly = true;           // block typing in Value column
+      out.value = '';                // empty until user types USD
+      tdValue.appendChild(out);
+
+      tr.append(tdName, tdRate, tdValue);
+      tbody.appendChild(tr);
+    }
+
+    const usd = document.getElementById('usd');
+
+    function updateValues() {
+      const val = usd.value.trim();
+      const n = Number(val);
+      const valid = Number.isFinite(n);
+
+      // Update each row's Value field
+      [...tbody.rows].forEach((tr, i) => {
+        const rate = rates[i].rate;
+        const out = tr.cells[2].querySelector('input.value');
+        if (!valid || n < 0) {
+          out.value = ''; // keep blank if invalid
+        } else {
+          out.value = (n * rate).toFixed(2);
+        }
+      });
+    }
+
+    usd.addEventListener('input', updateValues);
+  </script>
+
+  <footer><p>© 2025 Erika Karney</p></footer>
+</body>
+</html>
