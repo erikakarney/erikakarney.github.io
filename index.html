@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +62,16 @@
     }
     nav.links a:hover { background: var(--btnHover); }
 
-    /* Responsive background size */
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 12px;
+      font-size: 0.85rem;
+      color: #555;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
@@ -68,7 +79,7 @@
 </head>
 <body>
   <main>
-    <h1>CIS 114 Assignments</h1>
+    <h1>JavaScript Assignments</h1>
     <nav class="links" aria-label="Assignments">
       <a href="hw2.html">Homework 2</a>
       <a href="#">Homework 3</a>
@@ -79,5 +90,7 @@
       <a href="#">Homework 8</a>
     </nav>
   </main>
+
+  <footer><p>© 2025 Erika Karney</p></footer>
 </body>
 </html>
