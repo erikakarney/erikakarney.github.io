@@ -1,12 +1,13 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="description" content="CIS 114 - Homework 2: Basic Operations" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Homework 2 - Basic Operations</title>
+
   <style>
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
@@ -18,6 +19,7 @@
       position: relative;
       overflow-x: hidden;
     }
+    /* Background image layer */
     body::before {
       content: "";
       position: fixed;
@@ -29,6 +31,7 @@
       z-index: -2;
       pointer-events: none;
     }
+    /* Translucent overlay for readability */
     body::after {
       content: "";
       position: fixed;
@@ -37,7 +40,7 @@
       z-index: -1;
       pointer-events: none;
     }
-
+    /* Header and navigation */
     header h1 { margin: 0 0 12px; }
 
     nav a, .card a.button {
@@ -50,8 +53,10 @@
       border-radius: 6px;
       transition: background-color .2s ease;
     }
+    /* Hover state for both nav links and card buttons */
     nav a:hover, .card a.button:hover { background: var(--btnHover); }
 
+    /* Card grid layout */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -59,15 +64,27 @@
       margin-top: 16px;
       max-width: 900px;
     }
+    /* Individual card styling */
     .card {
       background: rgba(255,255,255,.8);
       padding: 16px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
+    /* Card content */
     .card h2 { margin: 0 0 8px; font-size: 1.2rem; }
     .card p { margin: 0 0 10px; }
 
+    footer {
+      position: fixed;
+      bottom: 10px;
+      left: 12px;
+      font-size: 0.85rem;
+      color: #555;
+      padding: 4px 8px;
+      border-radius: 4px;
+
+    }/* Background image scaling */
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
@@ -94,7 +111,7 @@
 
     <article id="part2" class="card">
       <h2>Part 2: Three Integers Calculator</h2>
-      <p>Enter three integers and compute sum, average, product, smallest, and largest (with validation).</p>
+      <p>Enter three integers and compute sum, average, product, smallest, and largest.</p>
       <nav aria-label="Open Part 2">
         <a class="button" href="hw2-part2.html">Open Part 2</a>
       </nav>
@@ -102,7 +119,7 @@
 
     <article id="extra" class="card">
       <h2>Extra Credit: Currency Converter</h2>
-      <p>Convert U.S. dollars into Euro, CAD, HKD, JPY, and MXN with live calculations.</p>
+      <p>Convert U.S. dollars into Euro, CAD, HKD, JPY, and MXN.</p>
       <nav aria-label="Open Extra Credit">
         <a class="button" href="hw2-extra.html">Open Extra Credit</a>
       </nav>
@@ -110,7 +127,3 @@
   </section>
 </body>
 </html>
-
-
-
-
