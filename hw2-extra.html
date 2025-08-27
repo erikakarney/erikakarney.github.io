@@ -89,6 +89,15 @@
       background: #eef5ff;
       border-color: #6aa2ff;
     }
+    .table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+table { max-width: 100%; table-layout: fixed; }
+th, td { word-break: break-word; }
+td, th, input.value { min-width: 0; }
 
     .hint { font-size: .9rem; color: #444; margin-top: 10px; }
 
@@ -108,7 +117,8 @@
     <a href="index.html">Homework 1 (Course Home)</a>
   </nav>
 
-  <div class="wrap">
+<div class="wrap">
+  <div class="table-wrap">
     <table aria-label="Currency conversion table">
       <thead>
         <tr>
@@ -130,8 +140,9 @@
         </tr>
       </tfoot>
     </table>
-    <p class="hint">Rates are for 1 USD (June 2024). Values update as you type.</p>
   </div>
+  <p class="hint">Rates are for 1 USD (June 2024). Values update as you type.</p>
+</div>
 
   <script>
     const rates = [
@@ -191,6 +202,7 @@
   </script>
 </body>
 </html>
+
 
 
 
