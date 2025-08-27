@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HW2 - Extra Credit (Currency Converter)</title>
   <style>
+    /* Make width math predictable and prevent tiny overflows */
+    *, *::before, *::after { box-sizing: border-box; }
+
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
     body {
@@ -15,7 +17,10 @@
       background: #fff;
       padding: 24px;
       position: relative;
-          }
+      /* DO NOT clamp overflow-x here; allow scroll if something is a hair wider */
+    }
+
+    /* Background image layer */
     body::before {
       content: "";
       position: fixed;
@@ -27,6 +32,7 @@
       z-index: -2;
       pointer-events: none;
     }
+    /* Translucent overlay for readability */
     body::after {
       content: "";
       position: fixed;
@@ -53,21 +59,43 @@
       padding: 16px;
       border-radius: 10px;
       max-width: 760px;
+      width: min(100%, 760px);
+      margin: 0;
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+
+    /* NEW: a dedicated scroll container for the table */
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
     }
 
     table {
       width: 100%;
+      max-width: 100%;
       border-collapse: collapse;
       background: #fff;
       border-radius: 8px;
       overflow: hidden;
+      table-layout: fixed;        /* keep columns from auto-expanding */
     }
-    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      word-break: break-word;     /* prevent long content from forcing overflow */
+      min-width: 0;               /* allow cells to shrink */
+    }
     thead th { text-align: left; background: #fafafa; }
     td.rate, td.value { text-align: right; }
+
+    /* Optional: guide column widths so the Value column doesn't squeeze too hard */
+    th.value, td.value { width: 40%; }
+    th.rate,  td.rate  { width: 25%; }
+
     input.value {
       width: 100%;
+      min-width: 0;
       text-align: right;
       border: none;
       background: transparent;
@@ -75,35 +103,35 @@
       color: inherit;
       padding: 0;
       outline: none;
+      box-sizing: border-box;     /* include any padding (future-proofing) */
     }
     input.value[readonly] { cursor: not-allowed; }
+
     #usd {
       width: 100%;
+      min-width: 0;
       border: 1px solid #ccc;
       border-radius: 6px;
       padding: 8px 10px;
       text-align: right;
+      box-sizing: border-box;
     }
     #usd:focus {
       outline: 2px solid #6aa2ff;
       background: #eef5ff;
       border-color: #6aa2ff;
     }
-    .table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
-}
-
-table { max-width: 100%; table-layout: fixed; }
-th, td { word-break: break-word; }
-td, th, input.value { min-width: 0; }
 
     .hint { font-size: .9rem; color: #444; margin-top: 10px; }
 
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
-    @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
+
+    /* iOS/Safari quirk: avoid fixed full-screen pseudo-element on tiny screens */
+    @media (max-width: 480px)  {
+      :root { --bgSize: 250px auto; }
+      body::before { position: absolute; } /* was fixed; prevents right-edge clipping */
+    }
   </style>
 </head>
 <body>
@@ -117,32 +145,32 @@ td, th, input.value { min-width: 0; }
     <a href="index.html">Homework 1 (Course Home)</a>
   </nav>
 
-<div class="wrap">
-  <div class="table-wrap">
-    <table aria-label="Currency conversion table">
-      <thead>
-        <tr>
-          <th>Currency</th>
-          <th class="rate">Rate</th>
-          <th class="value">Value</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <!-- rows injected by JS -->
-      </tbody>
-      <tfoot>
-        <tr>
-          <td><strong>Enter Amount of U.S. Dollars</strong></td>
-          <td></td>
-          <td class="value">
-            <input id="usd" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" aria-label="U.S. Dollars" />
-          </td>
-        </tr>
-      </tfoot>
-    </table>
+  <div class="wrap">
+    <div class="table-wrap">
+      <table aria-label="Currency conversion table">
+        <thead>
+          <tr>
+            <th>Currency</th>
+            <th class="rate">Rate</th>
+            <th class="value">Value</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <!-- rows injected by JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td><strong>Enter Amount of U.S. Dollars</strong></td>
+            <td></td>
+            <td class="value">
+              <input id="usd" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" aria-label="U.S. Dollars" />
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="hint">Rates are for 1 USD (June 2024). Values update as you type.</p>
   </div>
-  <p class="hint">Rates are for 1 USD (June 2024). Values update as you type.</p>
-</div>
 
   <script>
     const rates = [
@@ -171,7 +199,7 @@ td, th, input.value { min-width: 0; }
       const out = document.createElement('input');
       out.className = 'value';
       out.type = 'text';
-      out.readOnly = true;           // block typing in Value column
+      out.readOnly = true;
       out.value = '';                // empty until user types USD
       tdValue.appendChild(out);
 
@@ -191,7 +219,7 @@ td, th, input.value { min-width: 0; }
         const rate = rates[i].rate;
         const out = tr.cells[2].querySelector('input.value');
         if (!valid || n < 0) {
-          out.value = ''; // keep blank if invalid
+          out.value = '';
         } else {
           out.value = (n * rate).toFixed(2);
         }
@@ -202,8 +230,3 @@ td, th, input.value { min-width: 0; }
   </script>
 </body>
 </html>
-
-
-
-
-
