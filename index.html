@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,35 +11,21 @@
       --btnHover: #6a5d6e;
       --bgSize: 640px auto;
     }
+
     html, body { height: 100%; margin: 0; }
+
     body {
       font-family: Arial, sans-serif;
       color: #000;
-      background-color: #ffffff;
+      background-color: #fff;
       padding: 24px;
-      position: relative;
       overflow-x: hidden;
-    }
-    /* Background image layer */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image: url("desk-art.png");
-      background-repeat: no-repeat;
-      background-position: right bottom;
-      background-size: var(--bgSize);
-      z-index: -2;
-      pointer-events: none;
-    }
-    /* Translucent overlay */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.18);
-      z-index: -1;
-      pointer-events: none;
+
+      /* single background with two layers: overlay + image */
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)),
+        url("desk-art.png") no-repeat right bottom;
+      background-size: 100% 100%, var(--bgSize);
     }
 
     h1 {
@@ -72,6 +56,7 @@
       border-radius: 4px;
     }
 
+    /* resize background image on smaller screens */
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
@@ -94,5 +79,3 @@
   <footer><p>© 2025 Erika Karney</p></footer>
 </body>
 </html>
-
-
