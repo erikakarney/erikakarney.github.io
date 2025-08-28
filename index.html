@@ -19,13 +19,31 @@
       color: #000;
       background-color: #fff;
       padding: 24px;
+      position: relative;
       overflow-x: hidden;
+    }
 
-      /* single background with two layers: overlay + image */
-      background:
-        linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)),
-        url("desk-art.png") no-repeat right bottom;
-      background-size: 100% 100%, var(--bgSize);
+    /* Background image layer */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("desk-art.png");
+      background-repeat: no-repeat;
+      background-position: right bottom;
+      background-size: var(--bgSize);
+      z-index: -2; /* sits behind everything */
+      pointer-events: none; /* doesn’t block clicks */
+    }
+
+    /* Translucent overlay layer */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.18);
+      z-index: -1; /* sits above image, below content */
+      pointer-events: none;
     }
 
     h1 {
@@ -56,7 +74,7 @@
       border-radius: 4px;
     }
 
-    /* resize background image on smaller screens */
+    /* Resize background image on smaller screens */
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
