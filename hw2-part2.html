@@ -76,7 +76,7 @@
       padding: 12px;
       border-radius: 8px;
       background: #f7f7f7;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-family: Arial, sans-serif;
       white-space: pre-line;
     }
     .error { color: #b00020; font-weight: 600; }
@@ -89,7 +89,7 @@
 </head>
 <body>
   <h1>Homework 2 – Part 2</h1>
-  <p>Enter three <strong>integers</strong>. We’ll compute the sum, average, product, smallest, and largest.</p>
+  <p>Enter three <strong>integers</strong> and compute the sum, average, product, smallest, and largest.</p>
 
   <nav aria-label="HW2 navigation">
     <a href="hw2.html">← HW2 Home</a>
@@ -120,60 +120,69 @@
     <div id="result" aria-live="polite"></div>
   </form>
 
-  <script>
-    const q = (s) => document.querySelector(s);
-    const n1 = q('#n1');
-    const n2 = q('#n2');
-    const n3 = q('#n3');
-    const result = q('#result');
+<script>
+  /* Three Integers Calculator */
+  var n1 = document.getElementById("n1");
+  var n2 = document.getElementById("n2");
+  var n3 = document.getElementById("n3");
+  var result = document.getElementById("result");
+  var processBtn = document.getElementById("processBtn");
+  var clearBtn = document.getElementById("clearBtn");
 
-    function parseIntStrict(el) {
-      const v = el.value.trim();
-      if (v === '') return NaN;
-      const num = Number(v);
-      return Number.isInteger(num) ? num : NaN;
+  // Read an integer from an input by id, return NaN if invalid
+  function getInteger(el) {
+    var v = el.value.trim();
+    if (v === "") return NaN;                 // empty
+    if (v.indexOf(".") !== -1) return NaN;    // no decimals allowed
+    var n = Number(v);
+    if (!isFinite(n)) return NaN;             // not a number
+    if (Math.floor(n) !== n) return NaN;      // ensure integer
+    return n;
+  }
+
+  function showError(msg) {
+    result.innerHTML = "";                    // clear previous output
+    var p = document.createElement("p");
+    p.className = "error";
+    p.textContent = msg;
+    result.appendChild(p);
+  }
+
+  function showText(text) {
+    result.textContent = text;
+  }
+
+  processBtn.addEventListener("click", function () {
+    var a = getInteger(n1);
+    var b = getInteger(n2);
+    var c = getInteger(n3);
+
+    if (!isFinite(a) || !isFinite(b) || !isFinite(c)) {
+      showError("Please enter valid integers in all three boxes (no decimals, no blanks).");
+      return;
     }
 
-    function showError(msg) {
-      result.innerHTML = '';
-      const p = document.createElement('p');
-      p.className = 'error';
-      p.textContent = msg;
-      result.appendChild(p);
-    }
+    var sum = a + b + c;
+    var avg = sum / 3;
+    var prod = a * b * c;
+    var smallest = Math.min(a, b, c);
+    var largest = Math.max(a, b, c);
 
-    q('#processBtn').addEventListener('click', () => {
-      const a = parseIntStrict(n1);
-      const b = parseIntStrict(n2);
-      const c = parseIntStrict(n3);
+    var output =
+      "Inputs: " + a + ", " + b + ", " + c + "\n" +
+      "Sum: " + sum + "\n" +
+      "Average: " + avg + "\n" +
+      "Product: " + prod + "\n" +
+      "Smallest: " + smallest + "\n" +
+      "Largest: " + largest;
 
-      if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c)) {
-        showError('Please enter valid integers in all three boxes (no decimals, no blanks).');
-        return;
-      }
+    showText(output);
+  });
 
-      const sum = a + b + c;
-      const avg = sum / 3;
-      const prod = a * b * c;
-      const smallest = Math.min(a, b, c);
-      const largest = Math.max(a, b, c);
-
-      result.textContent =
-        `Inputs: ${a}, ${b}, ${c}
-Sum: ${sum}
-Average: ${avg}
-Product: ${prod}
-Smallest: ${smallest}
-Largest: ${largest}`;
-    });
-
-    q('#clearBtn').addEventListener('click', () => {
-      result.textContent = '';
-      n1.focus();
-    });
-  </script>
+  clearBtn.addEventListener("click", function () {
+    result.textContent = "";
+    n1.focus();
+  });
+</script>
 </body>
 </html>
-
-
-
