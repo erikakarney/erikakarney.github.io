@@ -17,8 +17,13 @@ and media queries adjust the background size on smaller screens.
   <title>Homework 2 - Basic Operations</title>
 
   <style>
+    /* Theme variables for buttons and background size */
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
+
+    /* Reset default margins/heights */
     html, body { height:100%; margin:0; }
+
+    /* Page body styling */
     body {
       font-family: Arial, sans-serif;
       color: #000;
@@ -27,7 +32,8 @@ and media queries adjust the background size on smaller screens.
       position: relative;
       overflow-x: hidden;
     }
-    /* Background image layer */
+
+    /* Background image layer, behind everything */
     body::before {
       content: "";
       position: fixed;
@@ -36,21 +42,24 @@ and media queries adjust the background size on smaller screens.
       background-repeat: no-repeat;
       background-position: right bottom;
       background-size: var(--bgSize);
-      z-index: -2;
-      pointer-events: none;
+      z-index: -2;          /* sits behind all content */
+      pointer-events: none; /* doesn't block clicks */
     }
-    /* Translucent overlay for readability */
+
+    /* Translucent overlay above background image */
     body::after {
       content: "";
       position: fixed;
       inset: 0;
       background: rgba(255, 255, 255, 0.18);
-      z-index: -1;
+      z-index: -1;          /* sits above image, below content */
       pointer-events: none;
     }
-    /* Header and navigation */
+
+    /* Header + navigation styling */
     header h1 { margin: 0 0 12px; }
 
+    /* Buttons for nav links and card links */
     nav a, .card a.button {
       display: inline-block;
       margin: 6px 8px 0 0;
@@ -61,28 +70,31 @@ and media queries adjust the background size on smaller screens.
       border-radius: 6px;
       transition: background-color .2s ease;
     }
-    /* Hover state for both nav links and card buttons */
+    /* Hover effect for nav links and buttons */
     nav a:hover, .card a.button:hover { background: var(--btnHover); }
 
     /* Card grid layout */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      gap: 16px;         /* space between cards */
       margin-top: 16px;
-      max-width: 900px;
+      max-width: 900px;  /* keeps grid from being too wide */
     }
-    /* Individual card styling */
+
+    /* Individual card box */
     .card {
       background: rgba(255,255,255,.8);
       padding: 16px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
-    /* Card content */
+
+    /* Card content spacing */
     .card h2 { margin: 0 0 8px; font-size: 1.2rem; }
     .card p { margin: 0 0 10px; }
 
+    /* Footer styling (currently not used for nav, but could hold info) */
     footer {
       position: fixed;
       bottom: 10px;
@@ -91,8 +103,9 @@ and media queries adjust the background size on smaller screens.
       color: #555;
       padding: 4px 8px;
       border-radius: 4px;
+    }
 
-    }/* Background image scaling */
+    /* Background image scaling for smaller screens */
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
@@ -102,13 +115,15 @@ and media queries adjust the background size on smaller screens.
   <header>
     <h1>Homework 2 – Basic Operations</h1>
 
+    <!-- Navigation link back to Homework 1 -->
     <nav class="main" aria-label="Top navigation">
       <a href="index.html">← Back to Homework 1 (Course Home)</a>
     </nav>
-
   </header>
 
+  <!-- Grid of "cards", each links to a part of Homework 2 -->
   <section class="cards" aria-label="Homework 2 parts">
+    <!-- Part 1 card -->
     <article id="part1" class="card">
       <h2>Part 1: Styled Output via JavaScript</h2>
       <p>Display <strong>xy 12 89</strong> with specific fonts, colors, and emphasis using JavaScript.</p>
@@ -117,6 +132,7 @@ and media queries adjust the background size on smaller screens.
       </nav>
     </article>
 
+    <!-- Part 2 card -->
     <article id="part2" class="card">
       <h2>Part 2: Three Integers Calculator</h2>
       <p>Enter three integers and compute sum, average, product, smallest, and largest.</p>
@@ -125,6 +141,7 @@ and media queries adjust the background size on smaller screens.
       </nav>
     </article>
 
+    <!-- Extra Credit card -->
     <article id="extra" class="card">
       <h2>Extra Credit: Currency Converter</h2>
       <p>Convert U.S. dollars into Euro, CAD, HKD, JPY, and MXN.</p>
@@ -135,4 +152,3 @@ and media queries adjust the background size on smaller screens.
   </section>
 </body>
 </html>
-
