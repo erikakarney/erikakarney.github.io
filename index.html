@@ -14,15 +14,19 @@ The background image and translucent overlay are applied with
   <meta name="description" content="JavaScript course assignments at CSM" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JavaScript Course Assignments – CSM</title>
+
   <style>
+    /* Theme colors + background image size */
     :root {
       --btn: #4b3f4e;
       --btnHover: #6a5d6e;
       --bgSize: 640px auto;
     }
 
+    /* Reset default margins/heights */
     html, body { height: 100%; margin: 0; }
 
+    /* Body text and layout */
     body {
       font-family: Arial, sans-serif;
       color: #000;
@@ -32,7 +36,7 @@ The background image and translucent overlay are applied with
       overflow-x: hidden;
     }
 
-    /* Background image layer */
+    /* Background image behind page content */
     body::before {
       content: "";
       position: fixed;
@@ -41,26 +45,28 @@ The background image and translucent overlay are applied with
       background-repeat: no-repeat;
       background-position: right bottom;
       background-size: var(--bgSize);
-      z-index: -2; /* sits behind everything */
-      pointer-events: none; /* doesn’t block clicks */
+      z-index: -2;           /* sits at very back */
+      pointer-events: none;  /* doesn’t block clicks */
     }
 
-    /* Translucent overlay layer */
+    /* Semi-transparent white overlay above image */
     body::after {
       content: "";
       position: fixed;
       inset: 0;
       background: rgba(255, 255, 255, 0.18);
-      z-index: -1; /* sits above image, below content */
+      z-index: -1;           /* sits above image but below text */
       pointer-events: none;
     }
 
+    /* Main page heading */
     h1 {
       font-size: 2em;
       margin-bottom: 16px;
-      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5); /* soft glow for readability */
     }
 
+    /* Navigation links styling */
     nav.links a {
       display: inline-block;
       margin: 6px 6px 0 0;
@@ -71,8 +77,10 @@ The background image and translucent overlay are applied with
       border-radius: 6px;
       transition: background-color .2s ease;
     }
+    /* Hover effect for nav links */
     nav.links a:hover { background: var(--btnHover); }
 
+    /* Footer styling */
     footer {
       position: fixed;
       bottom: 10px;
@@ -83,7 +91,7 @@ The background image and translucent overlay are applied with
       border-radius: 4px;
     }
 
-    /* Resize background image on smaller screens */
+    /* Responsive resizing of background image */
     @media (max-width: 1024px) { :root { --bgSize: 500px auto; } }
     @media (max-width: 768px)  { :root { --bgSize: 350px auto; } }
     @media (max-width: 480px)  { :root { --bgSize: 250px auto; } }
@@ -91,7 +99,10 @@ The background image and translucent overlay are applied with
 </head>
 <body>
   <main>
+    <!-- Page title -->
     <h1>JavaScript Assignments</h1>
+
+    <!-- Navigation for assignments -->
     <nav class="links" aria-label="Assignments">
       <a href="hw2.html">Homework 2</a>
       <a href="#">Homework 3</a>
@@ -103,8 +114,7 @@ The background image and translucent overlay are applied with
     </nav>
   </main>
 
+  <!-- Footer with name -->
   <footer><p>© 2025 Erika Karney</p></footer>
 </body>
 </html>
-
-
