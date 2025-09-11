@@ -1,0 +1,399 @@
+<!--
+HW3 – Extra Credit: Math Masher!
+What this page does:
+- Starts with a Start button.
+- Generates random 1-digit multiplication questions (0–9).
+- Student types an answer.
+- Correct: “Very good!”, confetti explodes from the question, then Continue/Quit.
+- Wrong: shakes and shows “No. Please try again.” (same question).
+- Quit hides the controls and shows a friendly goodbye message.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="CIS 114 - HW3 Extra Credit (Multiplication Game)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW3 – Extra Credit: Monster Math Mash!</title>
+
+  <style>
+    /* ------- Theme / Layout (consistent with other pages) ------- */
+    :root {
+      --btn:#4b3f4e;
+      --btnHover:#6a5d6e;
+      --bgSize:640px auto;
+      --accent:#9609b3;   
+      --accent2:#076abb;  
+      --accent3:#04792d;  
+    }
+
+    html, body { height:100%; margin:0; }
+    *, *::before, *::after { box-sizing:border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      color:#000;
+      background:#fff;
+      padding:24px;
+      position:relative;      /* for background layers below */
+      overflow-x:hidden;
+    }
+
+    /* Background image layer */
+    body::before {
+      content:"";
+      position:fixed; inset:0;
+      background:url("desk-art.png") no-repeat right bottom / var(--bgSize);
+      z-index:-2;
+      pointer-events:none;
+    }
+    /* Translucent overlay for readability */
+    body::after {
+      content:"";
+      position:fixed; inset:0;
+      background:rgba(255,255,255,.18);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    /* Navigation links */
+    nav a {
+      display:inline-block;
+      margin:6px 8px 16px 0;
+      padding:10px 14px;
+      background:var(--btn);
+      color:#fff;
+      text-decoration:none;
+      border-radius:6px;
+      transition:background-color .2s;
+    }
+    nav a:hover { background:var(--btnHover); }
+
+    /* Title + subtitle */
+    .title {
+      margin:0 0 8px;
+      font-size:2rem;
+      font-weight:900;
+      letter-spacing:.5px;
+      background: linear-gradient(90deg, var(--btn), var(--btnHover), var(--accent));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .subtitle { margin:0 0 14px; color:#444; }
+
+    /* Card container for the game */
+    .game {
+      background:rgba(255,255,255,.9);
+      padding:16px;
+      border-radius:10px;
+      max-width:520px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+      border:3px solid var(--accent);
+    }
+
+    /* Big Start button using theme gradient */
+    .start-wrap { display:flex; justify-content:center; margin:18px 0; }
+    .start-btn {
+      font-size:1.2rem; font-weight:800; letter-spacing:.5px;
+      padding:16px 28px; border:none; border-radius:999px; cursor:pointer; color:#000;
+      background: linear-gradient(135deg, var(--accent) 0%, #ffd56a 60%, #ffe699 100%);
+      box-shadow: 0 10px 18px rgba(0,0,0,.15);
+      transform: translateY(0);
+      transition: transform .1s ease, box-shadow .2s ease;
+    }
+    .start-btn:hover { transform: translateY(-2px); }
+    .start-btn:active { transform: translateY(0); box-shadow: 0 6px 12px rgba(0,0,0,.2); }
+
+    /* Question + animations */
+    #question { font-size:1.4rem; font-weight:800; margin:10px 0 8px; }
+    .bounce { animation: bounce .6s ease; }
+    @keyframes bounce {
+      0%{ transform:scale(1) }
+      30%{ transform:scale(1.12) }
+      60%{ transform:scale(0.98) }
+      100%{ transform:scale(1) }
+    }
+    .shake { animation: shake .4s ease; }
+    @keyframes shake {
+      0%,100%{ transform:translateX(0) }
+      25%{ transform:translateX(-8px) }
+      50%{ transform:translateX(8px) }
+      75%{ transform:translateX(-6px) }
+    }
+
+    /* Answer input */
+    label { font-weight:600; }
+    #answer {
+      width:100%;
+      margin-top:6px;
+      padding:10px 12px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      font-size:1.05rem;
+      outline:none;
+    }
+    #answer:focus {
+      border-color:var(--accent2);
+      box-shadow:0 0 0 3px rgba(100,181,246,.25);
+    }
+
+    /* Buttons row */
+    .buttons { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    button.action {
+      padding:10px 14px; border:none; border-radius:6px; cursor:pointer;
+      background:var(--btn); color:#fff; transition:background-color .2s;
+      font-weight:700;
+    }
+    button.action:hover { background:var(--btnHover); }
+
+    /* Continue / Quit styles */
+    #continueBtn { background:var(--accent3); }
+    #continueBtn:hover { background:#43a047; }
+    #quitBtn { background:#ef5350; }
+    #quitBtn:hover { background:#e53935; }
+
+    /* Feedback box */
+    #feedback {
+      margin-top:12px;
+      padding:12px;
+      border-radius:8px;
+      background:#f1f8e9;  /* light green */
+      min-height:2em;
+      white-space:pre-line;
+      font-weight:700;
+    }
+    .error { background:#ffebee !important; color:#b71c1c; }
+
+    /* Confetti pieces */
+    .confetti-piece {
+      position:absolute;
+      width:10px; height:10px;
+      opacity:.95;
+      pointer-events:none;
+      transform: translate(-50%, -50%);
+      border-radius:2px;            
+      animation: explode 1.2s ease-out forwards;
+    }
+    /* “Explode” moves each piece by its --dx / --dy and fades/rotates */
+    @keyframes explode {
+      0%   { transform: translate(-50%, -50%) translate(0,0) rotate(0deg); opacity:1; }
+      100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) rotate(720deg); opacity:0; }
+    }
+
+    /* Background image scaling */
+    @media (max-width:1024px){ :root { --bgSize:500px auto; } }
+    @media (max-width:768px) { :root { --bgSize:350px auto; } }
+    @media (max-width:480px){
+      :root { --bgSize:250px auto; }
+      body::before { position:absolute; } /* iOS/Safari tiny-screen quirk */
+    }
+  </style>
+</head>
+<body>
+  <h1 class="title">Math Masher!</h1>
+  <p class="subtitle">Multiplication practice for future math heroes.</p>
+
+  <nav aria-label="HW3 navigation">
+    <a href="hw3.html">← HW3 Home</a>
+    <a href="index.html">Homework 1 (Course Home)</a>
+  </nav>
+
+  <section class="game" aria-label="Multiplication practice game">
+    <!-- Big Start -->
+    <div class="start-wrap" id="startRow">
+      <button type="button" id="startBtn" class="start-btn">Start</button>
+    </div>
+
+    <!-- Question text (confetti will explode from here) -->
+    <p id="question" aria-live="polite">Press Start to get your first question!</p>
+
+    <!-- Controls wrapper so we can hide everything on Quit -->
+    <div id="controls" style="display:none;">
+      <!-- Answer input -->
+      <label for="answer">Your Answer</label>
+      <input id="answer" type="number" inputmode="numeric" aria-describedby="feedback">
+
+      <!-- Main buttons -->
+      <div class="buttons">
+        <button type="button" id="submitBtn" class="action">Submit</button>
+        <button type="button" id="tryBtn"   class="action" style="display:none;">New Question</button>
+      </div>
+
+      <!-- Continue / Quit (shown after a correct answer) -->
+      <div class="buttons" id="nextRow" style="display:none;">
+        <button type="button" id="continueBtn" class="action">Continue</button>
+        <button type="button" id="quitBtn" class="action">Quit</button>
+      </div>
+    </div>
+
+    <!-- Feedback box -->
+    <div id="feedback" aria-live="polite"></div>
+  </section>
+
+  <script>
+    // State + Elements
+
+    var num1 = 0, num2 = 0, correct = 0;
+
+    var startRow    = document.getElementById("startRow");
+    var startBtn    = document.getElementById("startBtn");
+    var submitBtn   = document.getElementById("submitBtn");
+    var tryBtn      = document.getElementById("tryBtn");
+    var continueBtn = document.getElementById("continueBtn");
+    var quitBtn     = document.getElementById("quitBtn");
+
+    var questionEl  = document.getElementById("question");
+    var answerEl    = document.getElementById("answer");
+    var feedbackEl  = document.getElementById("feedback");
+    var nextRow     = document.getElementById("nextRow");
+    var controls    = document.getElementById("controls");
+
+    // New Question
+    function newQuestion() {
+      // random 0–9
+      num1 = Math.floor(Math.random() * 10);
+      num2 = Math.floor(Math.random() * 10);
+      correct = num1 * num2;
+
+      // update UI
+      questionEl.textContent = "How much is " + num1 + " × " + num2 + "?";
+      feedbackEl.textContent = "";
+      feedbackEl.classList.remove("error");
+      nextRow.style.display = "none";
+      tryBtn.style.display = "none";
+
+      // clear + focus input
+      answerEl.value = "";
+      answerEl.focus();
+
+      // restart bounce animation
+      questionEl.classList.remove("bounce");
+      void questionEl.offsetWidth;
+      questionEl.classList.add("bounce");
+    }
+
+    // Confetti Burst. Explodes from the question element center.
+    function confettiBurstFromQuestion() {
+      // Find the question's center in viewport coordinates
+      var rect = questionEl.getBoundingClientRect();
+      var originX = rect.left + rect.width / 2;
+      var originY = rect.top  + rect.height / 2;
+
+      // Create many pieces with varied sizes/colors/shapes
+      var count = 90; // more pieces == bigger celebration!
+      for (var i = 0; i < count; i++) {
+        var piece = document.createElement("div");
+        piece.className = "confetti-piece";
+
+        // random size (6–12px)
+        var size = Math.random() * 6 + 6;
+        piece.style.width = size + "px";
+        piece.style.height = size + "px";
+
+        // random shape: square/rectangle/circle/triangle
+        var shape = Math.random();
+        if (shape < 0.25) {
+          // circle
+          piece.style.borderRadius = "50%";
+        } else if (shape < 0.5) {
+          // skinny rectangle
+          piece.style.width = (size * 0.5) + "px";
+        } else if (shape < 0.75) {
+          // triangle using borders (override size)
+          piece.style.width = "0";
+          piece.style.height = "0";
+          piece.style.borderLeft  = (size/2) + "px solid transparent";
+          piece.style.borderRight = (size/2) + "px solid transparent";
+          piece.style.borderBottom= (size)   + "px solid hsl(" + (Math.random()*360) + ", 90%, 60%)";
+          // triangles don’t need background color, set a small tweak
+        }
+
+        // random color (for non-triangle shapes)
+        if (shape < 0.75) {
+          piece.style.background = "hsl(" + (Math.random()*360) + ", 90%, 60%)";
+        }
+
+        // explosion vector: random direction + distance
+        var angle = Math.random() * Math.PI * 2;     // 0–360°
+        var distance = 80 + Math.random() * 220;     // px flight distance
+        var dx = Math.cos(angle) * distance + "px";
+        var dy = Math.sin(angle) * distance + "px";
+        piece.style.setProperty("--dx", dx);
+        piece.style.setProperty("--dy", dy);
+
+        // place at the question center (absolute to viewport)
+        piece.style.left = originX + "px";
+        piece.style.top  = originY + "px";
+
+        // add to the page
+        document.body.appendChild(piece);
+
+        // remove after animation ends
+        (function(el){
+          setTimeout(function(){ el.remove(); }, 1300);
+        })(piece);
+      }
+    }
+
+    // Check the answer
+    function checkAnswer() {
+      var raw = answerEl.value.trim();
+      var guess = Number(raw);
+
+      if (!isFinite(guess)) {
+        feedbackEl.textContent = "Please type a number.";
+        feedbackEl.classList.add("error");
+        return;
+      }
+
+      if (guess === correct) {
+        feedbackEl.textContent = "Very good!";
+        feedbackEl.classList.remove("error");
+        confettiBurstFromQuestion();
+        nextRow.style.display = "flex";
+        tryBtn.style.display = "none";
+      } else {
+        // shake + try again (same question)
+        questionEl.classList.remove("shake");
+        void questionEl.offsetWidth;
+        questionEl.classList.add("shake");
+
+        feedbackEl.textContent = "No. Please try again.";
+        feedbackEl.classList.add("error");
+        tryBtn.style.display = "inline-block";
+        nextRow.style.display = "none";
+        answerEl.focus();
+      }
+    }
+
+    // Event Listeners
+    startBtn.addEventListener("click", function () {
+      controls.style.display = "";     // reveal controls (hidden at first)
+      startRow.style.display = "none"; // hide Start
+      newQuestion();
+    });
+
+    submitBtn.addEventListener("click", checkAnswer);
+    tryBtn.addEventListener("click", newQuestion);
+    continueBtn.addEventListener("click", newQuestion);
+
+    quitBtn.addEventListener("click", function () {
+      // End the game: hide controls, show a friendly message, bring back Start
+      controls.style.display = "none";
+      nextRow.style.display = "none";
+      tryBtn.style.display = "none";
+      answerEl.value = "";
+      questionEl.textContent = "Thanks for playing, see you next time!";
+      feedbackEl.textContent = "";
+      startRow.style.display = "flex";
+    });
+
+    // Enter key submits the answer
+    answerEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { checkAnswer(); }
+    });
+  </script>
+</body>
+</html>
