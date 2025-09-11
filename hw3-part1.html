@@ -1,3 +1,14 @@
+<!--
+HW3 – Part 1: Student Grades
+What this page does:
+- Collects four integer grades (0–100): Homework, Midterm, Final, Participation.
+- Validates input (must be whole numbers between 0 and 100).
+- Calculates final average = .5*HW + .2*Mid + .2*Final + .1*Participation.
+- Rounds the average to a whole number, shows the letter grade, and notes
+  “Student must retake the course.” when the grade is D or F.
+- messages appear in the output area.
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,78 +16,165 @@
   <meta name="description" content="CIS 114 - HW3 Part 1 (Student Grades)">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HW3 – Part 1 (Student Grades)</title>
+
   <style>
+    /* ------- Theme / Layout ------- */
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
-    body { font-family:Arial, sans-serif; color:#000; background:#fff; padding:24px; position:relative; overflow-x:hidden; }
-    body::before { content:""; position:fixed; inset:0; background:url("desk-art.png") no-repeat right bottom/var(--bgSize); z-index:-2; pointer-events:none; }
-    body::after { content:""; position:fixed; inset:0; background:rgba(255,255,255,.18); z-index:-1; pointer-events:none; }
 
-    nav a { display:inline-block; margin:6px 8px 16px 0; padding:10px 14px; background:var(--btn); color:#fff; text-decoration:none; border-radius:6px; transition:background-color .2s; }
+    body {
+      font-family: Arial, sans-serif;
+      color:#000;
+      background:#fff;
+      padding:24px;
+      position:relative;     /* for the background layers below */
+      overflow-x:hidden;
+    }
+
+    /* Background image layer */
+    body::before {
+      content:"";
+      position:fixed; inset:0;
+      background:url("desk-art.png") no-repeat right bottom / var(--bgSize);
+      z-index:-2;
+      pointer-events:none;
+    }
+    /* Soft white overlay for readability */
+    body::after {
+      content:"";
+      position:fixed; inset:0;
+      background:rgba(255,255,255,.18);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    /* Links (top nav) */
+    nav a {
+      display:inline-block;
+      margin:6px 8px 16px 0;
+      padding:10px 14px;
+      background:var(--btn);
+      color:#fff;
+      text-decoration:none;
+      border-radius:6px;
+      transition:background-color .2s;
+    }
     nav a:hover { background:var(--btnHover); }
 
-    form { background:rgba(255,255,255,.8); padding:16px; border-radius:10px; max-width:520px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
+    /* Form card */
+    form {
+      background:rgba(255,255,255,.8);
+      padding:16px;
+      border-radius:10px;
+      max-width:520px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+
+    /* One row per field (label + input) */
     .row { display:flex; gap:10px; margin-bottom:12px; }
     .row label { display:block; font-weight:600; }
-    input[type="number"] { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; }
+    .row input[type="number"] {
+      width:100%;
+      padding:8px;
+      border:1px solid #ccc;
+      border-radius:6px;
+    }
+
+    /* Buttons */
     .buttons { display:flex; gap:10px; margin-top:8px; }
-    button { padding:10px 14px; border:none; border-radius:6px; cursor:pointer; background:var(--btn); color:#fff; transition:background-color .2s; }
+    button {
+      padding:10px 14px;
+      border:none; border-radius:6px;
+      cursor:pointer;
+      background:var(--btn); color:#fff;
+      transition:background-color .2s;
+    }
     button:hover { background:var(--btnHover); }
 
-    #output { margin-top:14px; padding:12px; border-radius:8px; background:#f7f7f7; }
+    /* Output area (results or errors) */
+    #output {
+      margin-top:14px;
+      padding:12px;
+      border-radius:8px;
+      background:#f7f7f7;
+      white-space:pre-line; /* honor line breaks in text */
+    }
     .error { color:#b00020; font-weight:600; }
-    @media (max-width:600px){ .row{ flex-direction:column; } }
-    @media (max-width:1024px){ :root{ --bgSize:500px auto } }
-    @media (max-width:768px){ :root{ --bgSize:350px auto } }
-    @media (max-width:480px){ :root{ --bgSize:250px auto } }
+
+    /* Background image scales down on small screens */
+    @media (max-width:600px){ .row { flex-direction:column; } }
+    @media (max-width:1024px){ :root { --bgSize:500px auto; } }
+    @media (max-width:768px) { :root { --bgSize:350px auto; } }
+    @media (max-width:480px) { :root { --bgSize:250px auto; } }
   </style>
 </head>
 <body>
   <h1>Homework 3 – Part 1: Student Grades</h1>
 
+  <!--nav back to HW3 index and course home -->
   <nav aria-label="HW3 navigation">
-    <a href="hw3.html">← HW3 Home</a>
+    <a href="hw3.html">HW3 Home</a>
     <a href="index.html">Homework 1 (Course Home)</a>
   </nav>
 
+  <!-- The form: four integer fields + buttons + output area -->
   <form id="gradesForm" novalidate>
     <div class="row">
       <label for="hw">Homework Average (0–100)</label>
       <input id="hw" name="hw" type="number" step="1" min="0" max="100" inputmode="numeric" required>
     </div>
+
     <div class="row">
       <label for="mid">Mid-Term Exam (0–100)</label>
       <input id="mid" name="mid" type="number" step="1" min="0" max="100" inputmode="numeric" required>
     </div>
+
     <div class="row">
       <label for="final">Final Exam (0–100)</label>
       <input id="final" name="final" type="number" step="1" min="0" max="100" inputmode="numeric" required>
     </div>
+
     <div class="row">
       <label for="part">Participation (0–100)</label>
       <input id="part" name="part" type="number" step="1" min="0" max="100" inputmode="numeric" required>
     </div>
 
     <div class="buttons">
+      <!-- Buttons are type="button" so the page doesn’t submit/reload -->
       <button type="button" id="calcBtn">Calculate</button>
-      <button type="reset" id="clearBtn">Clear</button>
+      <button type="reset"  id="clearBtn">Clear</button>
     </div>
 
+    <!-- Results and/or error messages appear here -->
     <div id="output" aria-live="polite"></div>
   </form>
 
   <script>
-    // Helpers
-    function readInt0to100(el) {
-      var v = el.value.trim();
-      if (v === "") return NaN;
-      if (v.indexOf(".") !== -1) return NaN;       // require integers
-      var n = Number(v);
-      if (!isFinite(n)) return NaN;
-      if (Math.floor(n) !== n) return NaN;
+    // ----------------------------
+    // Utility functions 
+    // ----------------------------
+
+    // Read a whole number between 0 and 100 from an <input>.
+    // Returns a number if valid, or NaN if invalid.
+    function readInt0to100(inputEl) {
+      var raw = inputEl.value.trim();
+
+      // Must not be blank
+      if (raw === "") return NaN;
+
+      // Convert to number
+      var n = Number(raw);
+
+      // Must be a finite number and an integer (no decimals)
+      if (!isFinite(n) || Math.floor(n) !== n) return NaN;
+
+      // Must be between 0 and 100
       if (n < 0 || n > 100) return NaN;
+
       return n;
     }
+
+    // Convert a percentage to a letter grade.
     function letterGrade(pct) {
       if (pct >= 90) return "A";
       if (pct >= 80) return "B";
@@ -84,44 +182,52 @@
       if (pct >= 60) return "D";
       return "F";
     }
+
+    // Show an error message in the output area.
     function showError(msg) {
       var out = document.getElementById("output");
       out.innerHTML = '<p class="error">' + msg + '</p>';
     }
+
+    // Show plain text (results) in the output area.
     function showText(text) {
       var out = document.getElementById("output");
       out.textContent = text;
     }
-
-    // Elements
-    var hw = document.getElementById("hw");
-    var mid = document.getElementById("mid");
-    var fin = document.getElementById("final");
+  
+    // Get references to inputs once 
+    var hw   = document.getElementById("hw");
+    var mid  = document.getElementById("mid");
+    var fin  = document.getElementById("final");
     var part = document.getElementById("part");
 
+    // Calculate button: 
     document.getElementById("calcBtn").addEventListener("click", function () {
-      var a = readInt0to100(hw);
-      var b = readInt0to100(mid);
-      var c = readInt0to100(fin);
-      var d = readInt0to100(part);
+      var hwVal   = readInt0to100(hw);
+      var midVal  = readInt0to100(mid);
+      var finVal  = readInt0to100(fin);
+      var partVal = readInt0to100(part);
 
-      if (!isFinite(a) || !isFinite(b) || !isFinite(c) || !isFinite(d)) {
-        showError("Please enter valid integers between 0 and 100 in all four boxes.");
+      // If any value is invalid, show an error and stop
+      if (!isFinite(hwVal) || !isFinite(midVal) || !isFinite(finVal) || !isFinite(partVal)) {
+        showError("Please enter whole numbers between 0 and 100 in all four boxes.");
         return;
       }
 
-      var finalAvg = (0.5 * a) + (0.2 * b) + (0.2 * c) + (0.1 * d);
-      var rounded = Math.round(finalAvg);
+      // Weighted average; then round to a whole number
+      var avg = (0.5 * hwVal) + (0.2 * midVal) + (0.2 * finVal) + (0.1 * partVal);
+      var rounded = Math.round(avg);
+
+      // Letter grade + retake note for D/F
       var grade = letterGrade(rounded);
+      var note = (grade === "D" || grade === "F") ? "\nStudent must retake the course." : "";
 
-      var report =
-        "Final Average: " + rounded + "\n" +
-        "Letter Grade: " + grade +
-        (grade === "D" || grade === "F" ? "\nStudent must retake the course." : "");
-
+      // Show the report (no alerts)
+      var report = "Final Average: " + rounded + "\n" + "Letter Grade: " + grade + note;
       showText(report);
     });
 
+    // Clear button: clear the output and focus the first field
     document.getElementById("clearBtn").addEventListener("click", function () {
       document.getElementById("output").textContent = "";
       hw.focus();
