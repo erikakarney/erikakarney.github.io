@@ -1,12 +1,11 @@
 <!--
 HW3 – Extra Credit: Math Masher!
-What this page does:
 - Starts with a Start button.
 - Generates random 1-digit multiplication questions (0–9).
 - Student types an answer.
 - Correct: “Very good!”, confetti explodes from the question, then Continue/Quit.
 - Wrong: shakes and shows “No. Please try again.” (same question).
-- Quit hides the controls and shows a friendly goodbye message.
+- Quit hides the controls and shows a goodbye message.
 -->
 
 <!DOCTYPE html>
@@ -18,7 +17,6 @@ What this page does:
   <title>HW3 – Extra Credit: Monster Math Mash!</title>
 
   <style>
-    /* ------- Theme / Layout (consistent with other pages) ------- */
     :root {
       --btn:#4b3f4e;
       --btnHover:#6a5d6e;
@@ -93,7 +91,7 @@ What this page does:
       border:3px solid var(--accent);
     }
 
-    /* Big Start button using theme gradient */
+    /* Big Start button */
     .start-wrap { display:flex; justify-content:center; margin:18px 0; }
     .start-btn {
       font-size:1.2rem; font-weight:800; letter-spacing:.5px;
@@ -159,7 +157,7 @@ What this page does:
       margin-top:12px;
       padding:12px;
       border-radius:8px;
-      background:#f1f8e9;  /* light green */
+      background:#f1f8e9;
       min-height:2em;
       white-space:pre-line;
       font-weight:700;
@@ -193,7 +191,7 @@ What this page does:
 </head>
 <body>
   <h1 class="title">Math Masher!</h1>
-  <p class="subtitle">Multiplication practice for future math heroes.</p>
+  <p class="subtitle">Multiplication training for future Math Heroes.</p>
 
   <nav aria-label="HW3 navigation">
     <a href="hw3.html">← HW3 Home</a>
@@ -206,10 +204,10 @@ What this page does:
       <button type="button" id="startBtn" class="start-btn">Start</button>
     </div>
 
-    <!-- Question text (confetti will explode from here) -->
+    <!-- Question text -->
     <p id="question" aria-live="polite">Press Start to get your first question!</p>
 
-    <!-- Controls wrapper so we can hide everything on Quit -->
+    <!-- Controls wrapper so everything's hidden on Quit -->
     <div id="controls" style="display:none;">
       <!-- Answer input -->
       <label for="answer">Your Answer</label>
@@ -233,7 +231,6 @@ What this page does:
   </section>
 
   <script>
-    // State + Elements
 
     var num1 = 0, num2 = 0, correct = 0;
 
@@ -274,7 +271,7 @@ What this page does:
       questionEl.classList.add("bounce");
     }
 
-    // Confetti Burst. Explodes from the question element center.
+    // Confetti Burst. Explodes from the question's center.
     function confettiBurstFromQuestion() {
       // Find the question's center in viewport coordinates
       var rect = questionEl.getBoundingClientRect();
@@ -282,7 +279,7 @@ What this page does:
       var originY = rect.top  + rect.height / 2;
 
       // Create many pieces with varied sizes/colors/shapes
-      var count = 90; // more pieces == bigger celebration!
+      var count = 90; 
       for (var i = 0; i < count; i++) {
         var piece = document.createElement("div");
         piece.className = "confetti-piece";
@@ -301,21 +298,20 @@ What this page does:
           // skinny rectangle
           piece.style.width = (size * 0.5) + "px";
         } else if (shape < 0.75) {
-          // triangle using borders (override size)
+          // triangle using borders
           piece.style.width = "0";
           piece.style.height = "0";
           piece.style.borderLeft  = (size/2) + "px solid transparent";
           piece.style.borderRight = (size/2) + "px solid transparent";
           piece.style.borderBottom= (size)   + "px solid hsl(" + (Math.random()*360) + ", 90%, 60%)";
-          // triangles don’t need background color, set a small tweak
         }
 
-        // random color (for non-triangle shapes)
+        // random colors
         if (shape < 0.75) {
           piece.style.background = "hsl(" + (Math.random()*360) + ", 90%, 60%)";
         }
 
-        // explosion vector: random direction + distance
+        // explosio: random direction + distance
         var angle = Math.random() * Math.PI * 2;     // 0–360°
         var distance = 80 + Math.random() * 220;     // px flight distance
         var dx = Math.cos(angle) * distance + "px";
@@ -323,7 +319,7 @@ What this page does:
         piece.style.setProperty("--dx", dx);
         piece.style.setProperty("--dy", dy);
 
-        // place at the question center (absolute to viewport)
+        // place at the question center
         piece.style.left = originX + "px";
         piece.style.top  = originY + "px";
 
@@ -349,7 +345,7 @@ What this page does:
       }
 
       if (guess === correct) {
-        feedbackEl.textContent = "Very good!";
+        feedbackEl.textContent = "Nice Job!";
         feedbackEl.classList.remove("error");
         confettiBurstFromQuestion();
         nextRow.style.display = "flex";
@@ -380,12 +376,12 @@ What this page does:
     continueBtn.addEventListener("click", newQuestion);
 
     quitBtn.addEventListener("click", function () {
-      // End the game: hide controls, show a friendly message, bring back Start
+      // End the game: hide controls, show a message, bring back Start
       controls.style.display = "none";
       nextRow.style.display = "none";
       tryBtn.style.display = "none";
       answerEl.value = "";
-      questionEl.textContent = "Thanks for playing, see you next time!";
+      questionEl.textContent = "Thanks for playing Math Masher! See you next time.";
       feedbackEl.textContent = "";
       startRow.style.display = "flex";
     });
@@ -397,3 +393,4 @@ What this page does:
   </script>
 </body>
 </html>
+
