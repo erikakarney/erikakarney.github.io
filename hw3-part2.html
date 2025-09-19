@@ -1,9 +1,12 @@
 <!--
-HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
-- Layout uses CSS Grid (no <table>) but keeps the same visual structure.
-- Inputs validate non-negative integers; errors show inline (no alerts).
-- Totals are right-aligned and never clip on phones.
-- Styles match the look/feel of your other HW pages (buttons, background, etc.).
+HW3 – Part 2: Sales Commission 
+- Displays a commission calculator for a salesperson.
+- User enters quantities for four items.
+- Each row shows the item price, quantity entered, and total.
+- A small confirmation appears under each total.
+- Calculates the overall Total Amount Sold and Total Weekly Earnings.
+- Validates inputs so only non-negative integers are accepted.
+- Uses CSS Grid for layout.
 -->
 
 <!DOCTYPE html>
@@ -15,7 +18,6 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
   <title>HW3 – Part 2 (Sales Commission)</title>
 
   <style>
-    /* ---------- Theme / Base ---------- */
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
     *, *::before, *::after { box-sizing:border-box; }
@@ -59,7 +61,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       row-gap:10px;
     }
 
-    /* Header row and item rows share the same 4-column template */
+    /* Header row and item rows */
     .grid-header,
     .grid-row {
       display:grid;
@@ -98,7 +100,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
     .cell input[readonly] { background:#f9f9f9; }
     .cell input.money    { text-align:right; }
 
-    /* Tiny echo under the total (e.g., "(qty: 3)") */
+    /* Tiny echo under the total */
     .qty-echo {
       display:block; margin-top:4px; font-size:.9rem; color:#555; text-align:right;
     }
@@ -138,7 +140,6 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       white-space:nowrap; border:0; padding:0; margin:-1px;
     }
 
-    /* ---------- Responsive tweaks ---------- */
     @media (max-width:1024px){ :root { --bgSize:500px auto; } }
     @media (max-width:768px) { :root { --bgSize:350px auto; } }
     @media (max-width:480px){
@@ -151,7 +152,6 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
         grid-template-columns: 1.6fr 0.8fr 0.8fr 1.8fr;
       }
 
-      /* Slightly tighter input sizing so long numbers fit */
       .cell input[type="number"],
       .cell input[type="text"] { padding:5px 6px; font-size:.95rem; }
     }
@@ -206,9 +206,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
   </section>
 
   <script>
-    // ----------------------------
     // Data
-    // ----------------------------
     var items = [
       { id: 1, price: 20.99 },
       { id: 2, price: 12.75 },
@@ -222,9 +220,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
     var totalSold = document.getElementById("totalSold");
     var totalEarn = document.getElementById("totalEarn");
 
-    // ----------------------------
     // Build grid rows (one per item)
-    // ----------------------------
     items.forEach(function (it) {
       var row   = document.createElement("div");
       row.className = "grid-row";
@@ -234,12 +230,12 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       c1.className = "cell";
       c1.textContent = "Item " + it.id;
 
-      // Price (right-aligned)
+      // Price 
       var c2 = document.createElement("div");
       c2.className = "cell right";
       c2.textContent = it.price.toFixed(2);
 
-      // Qty input (right-aligned)
+      // Qty input
       var c3 = document.createElement("div");
       c3.className = "cell right";
       var inQty = document.createElement("input");
@@ -251,7 +247,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       inQty.setAttribute("aria-label", "Quantity for Item " + it.id);
       c3.appendChild(inQty);
 
-      // Total (readonly input + echo)
+      // Total 
       var c4 = document.createElement("div");
       c4.className = "cell right";
       var outTotal = document.createElement("input");
@@ -274,9 +270,6 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       rows.appendChild(row);
     });
 
-    // ----------------------------
-    // Helpers
-    // ----------------------------
     function readNonNegInt(inputEl) {
       var raw = inputEl.value.trim();
       if (raw === "") return NaN;
@@ -289,9 +282,7 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
     }
     function money(x) { return Number(x).toFixed(2); }
 
-    // ----------------------------
     // Calculate
-    // ----------------------------
     document.getElementById("calcBtn").addEventListener("click", function () {
       msg.textContent = "";
       totalSold.value = "";
@@ -329,10 +320,8 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
       totalSold.value = money(grand);
       totalEarn.value = money(250 + 0.09 * grand);
     });
-
-    // ----------------------------
+    
     // Clear
-    // ----------------------------
     document.getElementById("clearBtn").addEventListener("click", function () {
       msg.textContent = "";
       totalSold.value = "";
@@ -354,3 +343,4 @@ HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
   </script>
 </body>
 </html>
+
