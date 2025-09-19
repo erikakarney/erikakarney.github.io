@@ -1,175 +1,160 @@
 <!--
-HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
-- Four columns: Item | Price | Qty | Total
-- Looks like a table, but uses CSS Grid (not <table>)
-- No alerts; inline validation; accessible labels
+HW3 – Part 2: Sales Commission (Grid version, mobile-friendly)
+- Layout uses CSS Grid (no <table>) but keeps the same visual structure.
+- Inputs validate non-negative integers; errors show inline (no alerts).
+- Totals are right-aligned and never clip on phones.
+- Styles match the look/feel of your other HW pages (buttons, background, etc.).
 -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="CIS 114 - HW3 Part 2 (Sales Commission, Grid)">
+  <meta name="description" content="CIS 114 - HW3 Part 2 (Sales Commission)">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HW3 – Part 2 (Sales Commission)</title>
 
   <style>
-    /* ------- Theme / Layout (consistent with your other pages) ------- */
+    /* ---------- Theme / Base ---------- */
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
-    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing:border-box; }
 
     body {
       font-family: Arial, sans-serif;
-      color:#000;
-      background:#fff;
-      padding:24px;
-      position:relative;
-      overflow-x:hidden;
+      color:#000; background:#fff;
+      padding:24px; position:relative; overflow-x:hidden;
     }
-
-    /* Background layers */
+    /* Background image */
     body::before {
       content:""; position:fixed; inset:0;
       background:url("desk-art.png") no-repeat right bottom / var(--bgSize);
       z-index:-2; pointer-events:none;
     }
+    /* Translucent overlay */
     body::after {
       content:""; position:fixed; inset:0;
       background:rgba(255,255,255,.18);
       z-index:-1; pointer-events:none;
     }
 
-    /* Nav */
+    h1 { margin:0 0 12px; }
     nav a {
-      display:inline-block;
-      margin:6px 8px 16px 0;
-      padding:10px 14px;
-      background:var(--btn);
-      color:#fff; text-decoration:none;
-      border-radius:6px;
+      display:inline-block; margin:6px 8px 16px 0; padding:10px 14px;
+      background:var(--btn); color:#fff; text-decoration:none; border-radius:6px;
       transition:background-color .2s;
     }
     nav a:hover { background:var(--btnHover); }
 
-    /* Panel */
+    /* ---------- Card wrapper ---------- */
     .wrap {
       background:rgba(255,255,255,.8);
-      padding:16px;
-      border-radius:10px;
-      max-width:760px;
+      padding:16px; border-radius:10px; max-width:760px;
       box-shadow:0 2px 10px rgba(0,0,0,.06);
     }
 
-    /* -------- "Table-like" grid -------- */
-    .grid-table {
-      border:1px solid #eee;
-      border-radius:8px;
-      overflow:hidden;
-      background:#fff;
-    }
-
-    /* Header row */
-    .grid-header {
+    /* ---------- Grid “table” ---------- */
+    .grid {
       display:grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr; /* Item | Price | Qty | Total */
-      background:#fafafa;
-      border-bottom:1px solid #eee;
+      row-gap:10px;
     }
-    .grid-header > div {
-      padding:10px 12px;
-      font-weight:700;
-      border-right:1px solid #eee;
-    }
-    .grid-header > div:last-child { border-right:none; }
 
-    /* Data rows */
+    /* Header row and item rows share the same 4-column template */
+    .grid-header,
     .grid-row {
       display:grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      border-bottom:1px solid #eee;
+      grid-template-columns: 1.8fr 0.9fr 0.9fr 1.4fr; /* Item | Price | Qty | Total */
+      column-gap:10px;
+      align-items:start;
     }
-    .cell {
+
+    .grid-header {
+      background:#fafafa;
       padding:10px 12px;
-      border-right:1px solid #eee;
+      border-radius:8px;
+      border:1px solid #eee;
+      font-weight:700;
     }
-    .cell:last-child { border-right:none; }
+
+    .grid-row {
+      background:#fff;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #eee;
+    }
+
+    .cell { min-width:0; }            /* allow content to shrink inside grid */
     .right { text-align:right; }
 
-    /* Inputs */
+    /* Inputs inside cells */
     .cell input[type="number"],
     .cell input[type="text"] {
       width:100%;
       padding:6px 8px;
-      border:1px solid #ccc;
-      border-radius:6px;
-      min-width:0;
-      text-align:right;
+      border:1px solid #ccc; border-radius:6px;
+      min-width:0;                 /* prevent clipping in narrow cells */
+      text-overflow:ellipsis;
     }
     .cell input[readonly] { background:#f9f9f9; }
+    .cell input.money    { text-align:right; }
 
-    /* Tiny qty echo under total (like before) */
+    /* Tiny echo under the total (e.g., "(qty: 3)") */
     .qty-echo {
-      display:block;
-      margin-top:4px;
-      font-size:.9rem;
-      color:#555;
-      text-align:right;
+      display:block; margin-top:4px; font-size:.9rem; color:#555; text-align:right;
     }
 
-    /* Totals block (still looks like table footer) */
+    /* ---------- Footer totals area ---------- */
     .totals {
-      margin-top:12px;
-      border:1px solid #eee;
-      border-radius:8px;
-      overflow:hidden;
-      background:#fff;
+      display:grid; row-gap:10px; margin-top:12px;
     }
     .total-row {
       display:grid;
-      grid-template-columns: 3fr 1fr;
-      border-bottom:1px solid #eee;
+      grid-template-columns: 1fr 1fr 1fr 1.4fr; /* align with data rows; label spans first 3 cols */
+      column-gap:10px; align-items:center;
     }
-    .total-row:last-child { border-bottom:none; }
     .total-row .label {
-      padding:10px 12px;
-      font-weight:700;
-      text-align:right;
-      background:#fafafa;
-      border-right:1px solid #eee;
+      grid-column: 1 / 4;
+      text-align:right; font-weight:700;
     }
-    .total-row .value { padding:10px 12px; }
-    .total-row .value input {
-      width:100%;
-      padding:6px 8px;
-      border:1px solid #ccc;
-      border-radius:6px;
-      text-align:right;
+    .total-row .value {
+      grid-column: 4 / 5;
     }
 
+    /* ---------- Buttons / messages ---------- */
     .buttons { display:flex; gap:10px; margin-top:12px; }
     .buttons button {
-      padding:10px 14px;
-      border:none; border-radius:6px;
-      cursor:pointer;
-      background:var(--btn); color:#fff;
-      transition:background-color .2s;
+      padding:10px 14px; border:none; border-radius:6px; cursor:pointer;
+      background:var(--btn); color:#fff; transition:background-color .2s;
     }
     .buttons button:hover { background:var(--btnHover); }
 
     .hint  { font-size:.9rem; color:#444; margin-top:10px; }
     .error { color:#b00020; font-weight:600; margin-top:8px; }
 
+    /* ---------- Accessibility helpers ---------- */
     .visually-hidden {
       position:absolute !important; height:1px; width:1px; overflow:hidden;
-      clip:rect(1px, 1px, 1px, 1px); clip-path: inset(50%);
+      clip:rect(1px,1px,1px,1px); clip-path:inset(50%);
       white-space:nowrap; border:0; padding:0; margin:-1px;
     }
 
-    /* Background image scaling */
+    /* ---------- Responsive tweaks ---------- */
     @media (max-width:1024px){ :root { --bgSize:500px auto; } }
     @media (max-width:768px) { :root { --bgSize:350px auto; } }
-    @media (max-width:480px){ :root { --bgSize:250px auto; } }
+    @media (max-width:480px){
+      :root { --bgSize:250px auto; }
+      body::before { position:absolute; } /* iOS fix for right-edge clipping */
+
+      /* Give the Total column more room on phones */
+      .grid-header,
+      .grid-row {
+        grid-template-columns: 1.6fr 0.8fr 0.8fr 1.8fr;
+      }
+
+      /* Slightly tighter input sizing so long numbers fit */
+      .cell input[type="number"],
+      .cell input[type="text"] { padding:5px 6px; font-size:.95rem; }
+    }
   </style>
 </head>
 <body>
@@ -181,33 +166,32 @@ HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
   </nav>
 
   <section class="wrap" aria-label="Commission calculator">
-    <div class="grid-table" role="group" aria-label="Sales grid">
-      <!-- Header row (static) -->
-      <div class="grid-header" aria-hidden="false">
-        <div>Item</div>
-        <div class="right">Price</div>
-        <div class="right">Qty</div>
-        <div class="right">Total</div>
+    <div class="grid" id="grid">
+      <!-- Header -->
+      <div class="grid-header">
+        <div class="cell">Item</div>
+        <div class="cell right">Price</div>
+        <div class="cell right">Qty</div>
+        <div class="cell right">Total</div>
       </div>
-
-      <!-- Data rows injected here -->
+      <!-- Rows get injected here by JS -->
       <div id="rows"></div>
-    </div>
 
-    <!-- Totals (visually like table footer) -->
-    <div class="totals" aria-label="Totals">
-      <div class="total-row">
-        <div class="label">Total Amount Sold</div>
-        <div class="value">
-          <label class="visually-hidden" for="totalSold">Total Amount Sold</label>
-          <input id="totalSold" type="text" readonly>
+      <!-- Totals footer -->
+      <div class="totals">
+        <div class="total-row">
+          <div class="label">Total Amount Sold</div>
+          <div class="value">
+            <label class="visually-hidden" for="totalSold">Total Amount Sold</label>
+            <input id="totalSold" type="text" class="money" readonly>
+          </div>
         </div>
-      </div>
-      <div class="total-row">
-        <div class="label">Total Weekly Earnings</div>
-        <div class="value">
-          <label class="visually-hidden" for="totalEarn">Total Weekly Earnings</label>
-          <input id="totalEarn" type="text" readonly>
+        <div class="total-row">
+          <div class="label">Total Weekly Earnings</div>
+          <div class="value">
+            <label class="visually-hidden" for="totalEarn">Total Weekly Earnings</label>
+            <input id="totalEarn" type="text" class="money" readonly>
+          </div>
         </div>
       </div>
     </div>
@@ -223,7 +207,7 @@ HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
 
   <script>
     // ----------------------------
-    // Item price data
+    // Data
     // ----------------------------
     var items = [
       { id: 1, price: 20.99 },
@@ -238,60 +222,61 @@ HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
     var totalSold = document.getElementById("totalSold");
     var totalEarn = document.getElementById("totalEarn");
 
-    // Build one grid "row" that looks like a table row
-    function buildRow(it) {
-      var row = document.createElement("div");
+    // ----------------------------
+    // Build grid rows (one per item)
+    // ----------------------------
+    items.forEach(function (it) {
+      var row   = document.createElement("div");
       row.className = "grid-row";
 
-      // Item cell
-      var cItem = document.createElement("div");
-      cItem.className = "cell";
-      cItem.textContent = "Item " + it.id;
+      // Item name
+      var c1 = document.createElement("div");
+      c1.className = "cell";
+      c1.textContent = "Item " + it.id;
 
-      // Price cell
-      var cPrice = document.createElement("div");
-      cPrice.className = "cell right";
-      cPrice.textContent = it.price.toFixed(2);
+      // Price (right-aligned)
+      var c2 = document.createElement("div");
+      c2.className = "cell right";
+      c2.textContent = it.price.toFixed(2);
 
-      // Qty cell
-      var cQty = document.createElement("div");
-      cQty.className = "cell right";
+      // Qty input (right-aligned)
+      var c3 = document.createElement("div");
+      c3.className = "cell right";
       var inQty = document.createElement("input");
       inQty.type = "number";
       inQty.min  = "0";
       inQty.step = "1";
-      inQty.id   = "qty" + it.id;
+      inQty.value = "";
+      inQty.id = "qty" + it.id;
       inQty.setAttribute("aria-label", "Quantity for Item " + it.id);
-      cQty.appendChild(inQty);
+      c3.appendChild(inQty);
 
-      // Total cell
-      var cTotal = document.createElement("div");
-      cTotal.className = "cell right";
+      // Total (readonly input + echo)
+      var c4 = document.createElement("div");
+      c4.className = "cell right";
       var outTotal = document.createElement("input");
       outTotal.type = "text";
       outTotal.readOnly = true;
+      outTotal.className = "money";
       outTotal.id = "total" + it.id;
       outTotal.setAttribute("aria-label", "Total for Item " + it.id);
-      cTotal.appendChild(outTotal);
+      c4.appendChild(outTotal);
 
-      // Tiny qty echo below total (like before)
       var echo = document.createElement("span");
       echo.className = "qty-echo";
       echo.id = "echo" + it.id;
-      cTotal.appendChild(echo);
+      c4.appendChild(echo);
 
-      row.appendChild(cItem);
-      row.appendChild(cPrice);
-      row.appendChild(cQty);
-      row.appendChild(cTotal);
-
+      row.appendChild(c1);
+      row.appendChild(c2);
+      row.appendChild(c3);
+      row.appendChild(c4);
       rows.appendChild(row);
-    }
+    });
 
-    // Build all rows
-    items.forEach(buildRow);
-
+    // ----------------------------
     // Helpers
+    // ----------------------------
     function readNonNegInt(inputEl) {
       var raw = inputEl.value.trim();
       if (raw === "") return NaN;
@@ -304,32 +289,36 @@ HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
     }
     function money(x) { return Number(x).toFixed(2); }
 
+    // ----------------------------
     // Calculate
+    // ----------------------------
     document.getElementById("calcBtn").addEventListener("click", function () {
       msg.textContent = "";
       totalSold.value = "";
       totalEarn.value = "";
 
-      var ok = true, grand = 0;
+      var ok = true;
+      var grand = 0;
 
       items.forEach(function (it) {
-        var qtyEl = document.getElementById("qty" + it.id);
-        var totEl = document.getElementById("total" + it.id);
+        var inQty = document.getElementById("qty" + it.id);
         var echo  = document.getElementById("echo" + it.id);
+        var totEl = document.getElementById("total" + it.id);
 
-        var qty = readNonNegInt(qtyEl);
-        qtyEl.setAttribute("aria-invalid", isNaN(qty) ? "true" : "false");
+        var qty = readNonNegInt(inQty);
+        inQty.setAttribute("aria-invalid", isNaN(qty) ? "true" : "false");
 
         if (isNaN(qty)) {
           ok = false;
           totEl.value = "";
           echo.textContent = "";
-        } else {
-          var line = qty * it.price;
-          totEl.value = money(line);
-          echo.textContent = "(qty: " + qty + ")";
-          grand += line;
+          return;
         }
+
+        var line = qty * it.price;
+        totEl.value = money(line);
+        echo.textContent = "(qty: " + qty + ")";
+        grand += line;
       });
 
       if (!ok) {
@@ -341,17 +330,22 @@ HW3 – Part 2: Sales Commission (CSS Grid version, visually same as table)
       totalEarn.value = money(250 + 0.09 * grand);
     });
 
+    // ----------------------------
     // Clear
+    // ----------------------------
     document.getElementById("clearBtn").addEventListener("click", function () {
       msg.textContent = "";
       totalSold.value = "";
       totalEarn.value = "";
 
       items.forEach(function (it) {
-        document.getElementById("qty" + it.id).value = "";
-        document.getElementById("total" + it.id).value = "";
-        document.getElementById("echo" + it.id).textContent = "";
-        document.getElementById("qty" + it.id).setAttribute("aria-invalid","false");
+        var q = document.getElementById("qty" + it.id);
+        var e = document.getElementById("echo" + it.id);
+        var t = document.getElementById("total" + it.id);
+        q.value = "";
+        q.setAttribute("aria-invalid", "false");
+        e.textContent = "";
+        t.value = "";
       });
 
       var first = document.getElementById("qty1");
