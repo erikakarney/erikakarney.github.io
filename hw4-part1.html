@@ -1,0 +1,110 @@
+<!--
+HW4 – Part 1 (For / While)
+What this does:
+- Uses a FOR loop to compute product and sum of every 4th integer from 5 to 25.
+- Uses a WHILE loop to compute product and sum of every 3rd integer from 3 to 18.
+- Displays results with toLocaleString() 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="CIS 114 - HW4 Part 1 (For / While Practice)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HW4 – Part 1 (For / While)</title>
+  <style>
+    :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
+    html, body { height:100%; margin:0; }
+    body {
+      font-family: Arial, sans-serif; color:#000; background:#fff;
+      padding:24px; position:relative; overflow-x:hidden;
+    }
+    body::before { content:""; position:fixed; inset:0;
+      background:url("desk-art.png") no-repeat right bottom/var(--bgSize);
+      z-index:-2; pointer-events:none; }
+    body::after { content:""; position:fixed; inset:0;
+      background:rgba(255,255,255,.18); z-index:-1; pointer-events:none; }
+
+    nav a { display:inline-block; margin:6px 8px 16px 0; padding:10px 14px;
+      background:var(--btn); color:#fff; text-decoration:none; border-radius:6px;
+      transition:background-color .2s; }
+    nav a:hover { background:var(--btnHover); }
+
+    .panel { background:rgba(255,255,255,.8); padding:16px; border-radius:10px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06); max-width:700px; }
+    .section { margin-bottom:16px; }
+    .mono { white-space:pre-line; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+    @media (max-width:1024px){ :root { --bgSize:500px auto; } }
+    @media (max-width:768px){ :root { --bgSize:350px auto; } }
+    @media (max-width:480px){ :root { --bgSize:250px auto; } }
+  </style>
+</head>
+<body>
+  <h1>Homework 4 – Part 1: For / While</h1>
+
+  <nav aria-label="HW4 navigation">
+    <a href="hw4.html">HW4 Home</a>
+    <a href="index.html">Homework 1 (Course Home)</a>
+  </nav>
+
+  <section class="panel" aria-label="Results">
+    <div class="section">
+      <h2>Every 4th integer from 5 to 25 (FOR)</h2>
+      <div id="out1" class="mono" aria-live="polite"></div>
+    </div>
+    <div class="section">
+      <h2>Every 3rd integer from 3 to 18 (WHILE)</h2>
+      <div id="out2" class="mono" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <script>
+
+    function expression(nums, op) {
+      return nums.join(" " + op + " ");
+    }
+
+    function pretty(n) {
+      return n.toLocaleString();
+    }
+
+    // FOR: 5, 9, 13, 17, 21, 25
+    var seq1 = [];
+    for (var x = 5; x <= 25; x += 4) {
+      seq1.push(x);
+    }
+    var sum1 = 0;
+    var prod1 = 1;
+    for (var i = 0; i < seq1.length; i++) {
+      sum1 += seq1[i];
+      prod1 *= seq1[i];
+    }
+    var out1 = document.getElementById("out1");
+    out1.textContent =
+      "The result of " + expression(seq1, "*") + " is " + pretty(prod1) + "\n" +
+      "The result of " + expression(seq1, "+") + " is " + pretty(sum1);
+
+    // WHILE: 3, 6, 9, 12, 15, 18
+    var seq2 = [];
+    var y = 3;
+    while (y <= 18) {
+      seq2.push(y);
+      y += 3;
+    }
+    var sum2 = 0;
+    var prod2 = 1;
+    var j = 0;
+    while (j < seq2.length) {
+      sum2 += seq2[j];
+      prod2 *= seq2[j];
+      j++;
+    }
+    var out2 = document.getElementById("out2");
+    out2.textContent =
+      "The result of " + expression(seq2, "*") + " is " + pretty(prod2) + "\n" +
+      "The result of " + expression(seq2, "+") + " is " + pretty(sum2);
+  </script>
+</body>
+</html>
