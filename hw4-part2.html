@@ -1,51 +1,76 @@
 <!--
 HW4 – Part 2 (Multiplication Tables 5–9)
-- Generates 5 tables (multipliers 5-9).
-- Each table shows Number (1-9), Multiplier, Result.
+- Generates 5 tables (multipliers 5–9) with proper <caption> for accessibility.
+- Each table shows Number (1–9), Multiplier, Result.
 - Uses nested loops (outer: multiplier; inner: numbers 1..9).
 -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" >
-  <meta name="description" content="CIS 114 - HW4 Part 2 (Multiplication Tables 5–9)" >
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <meta charset="UTF-8">
+  <meta name="description" content="CIS 114 - HW4 Part 2 (Multiplication Tables 5–9)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HW4 – Part 2 (Multiplication Tables 5–9)</title>
+
   <style>
     :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
     html, body { height:100%; margin:0; }
+
     body {
-      font-family: Arial, sans-serif; color:#000; background:#fff;
+      font-family: Arial, sans-serif;
+      color:#000; background:#fff;
       padding:24px; position:relative; overflow-x:hidden;
     }
-    body::before { content:""; position:fixed; inset:0;
-      background:url("desk-art.png") no-repeat right bottom/var(--bgSize);
-      z-index:-2; pointer-events:none; }
-    body::after { content:""; position:fixed; inset:0;
-      background:rgba(255,255,255,.18); z-index:-1; pointer-events:none; }
+    /* Background art + soft overlay */
+    body::before {
+      content:""; position:fixed; inset:0;
+      background:url("desk-art.png") no-repeat right bottom / var(--bgSize);
+      z-index:-2; pointer-events:none;
+    }
+    body::after {
+      content:""; position:fixed; inset:0;
+      background:rgba(255,255,255,.18);
+      z-index:-1; pointer-events:none;
+    }
 
-    nav a { display:inline-block; margin:6px 8px 16px 0; padding:10px 14px;
+    h1 { margin:0 0 12px; }
+
+    /* Top navigation */
+    nav a {
+      display:inline-block; margin:6px 8px 16px 0; padding:10px 14px;
       background:var(--btn); color:#fff; text-decoration:none; border-radius:6px;
-      transition:background-color .2s; }
+      transition:background-color .2s;
+    }
     nav a:hover { background:var(--btnHover); }
 
-    .wrap { background:rgba(255,255,255,.8); padding:16px; border-radius:10px;
-      box-shadow:0 2px 10px rgba(0,0,0,.06); max-width:860px; }
+    /* Card wrapper */
+    .wrap {
+      background:rgba(255,255,255,.8);
+      padding:16px; border-radius:10px; max-width:860px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+
+    /* Table styling */
     .tbl { width:100%; border-collapse:collapse; margin:0 0 16px; }
-    .tbl th, .tbl td { border:1px solid #ddd; padding:8px 10px; }
+    .tbl caption {
+      text-align:left;
+      font-weight:700;
+      font-size:1.1rem;          
+      margin:6px 0;              
+    }
     .tbl thead th { background:#f2f6ff; text-align:left; }
+    .tbl th, .tbl td { border:1px solid #ddd; padding:8px 10px; }
     .tbl tbody tr:nth-child(odd) { background:#fff; }
     .tbl tbody tr:nth-child(even){ background:#f7f7f7; }
-    .multih { margin:6px 0; font-size:1.1rem; }
 
     @media (max-width:1024px){ :root { --bgSize:500px auto; } }
-    @media (max-width:768px){ :root { --bgSize:350px auto; } }
+    @media (max-width:768px) { :root { --bgSize:350px auto; } }
     @media (max-width:480px){ :root { --bgSize:250px auto; } }
   </style>
 </head>
 <body>
-  <h1> Multiplication Tables (5–9)</h1>
+  <h1>Multiplication Tables (5–9)</h1>
 
   <nav aria-label="HW4 navigation">
     <a href="hw4.html">HW4 Home</a>
@@ -57,27 +82,32 @@ HW4 – Part 2 (Multiplication Tables 5–9)
   </section>
 
   <script>
-    // Build a single table for a given multiplier
+    // Build a single table for a given multiplier, using <caption> for accessibility
     function buildTable(multiplier) {
-      var h = document.createElement('h2');
-      h.className = 'multih';
-      h.textContent = 'Multiplier ' + multiplier;
-
       var table = document.createElement('table');
       table.className = 'tbl';
-      table.setAttribute('aria-label','Table for multiplier ' + multiplier);
 
+      var caption = document.createElement('caption');
+      caption.textContent = 'Multiplication Table for ' + multiplier;
+      table.appendChild(caption);
+
+      // Table head
       var thead = document.createElement('thead');
       var thr = document.createElement('tr');
-      ['Number','Multiplier','Result'].forEach(function(txt){
-        var th = document.createElement('th'); th.textContent = txt; thr.appendChild(th);
+
+      var headings = ['Number', 'Multiplier', 'Result'];
+      headings.forEach(function (txt, idx) {
+        var th = document.createElement('th');
+        th.textContent = txt;
+        th.setAttribute('scope', 'col');
+        thr.appendChild(th);
       });
+
       thead.appendChild(thr);
       table.appendChild(thead);
 
+      // Table body (inner loop: numbers 1..9)
       var tbody = document.createElement('tbody');
-
-      // inner loop: numbers 1..9
       for (var n = 1; n <= 9; n++) {
         var tr = document.createElement('tr');
 
@@ -97,15 +127,10 @@ HW4 – Part 2 (Multiplication Tables 5–9)
       }
 
       table.appendChild(tbody);
-
-      // return a DocumentFragment (header + table together)
-      var frag = document.createDocumentFragment();
-      frag.appendChild(h);
-      frag.appendChild(table);
-      return frag;
+      return table;
     }
 
-    // outer loop: multipliers 5..9
+    // Outer loop: build tables for multipliers 5..9
     var host = document.getElementById('tables');
     for (var m = 5; m <= 9; m++) {
       host.appendChild(buildTable(m));
@@ -113,5 +138,3 @@ HW4 – Part 2 (Multiplication Tables 5–9)
   </script>
 </body>
 </html>
-
-
