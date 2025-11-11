@@ -1,0 +1,130 @@
+<!--
+HW6 – Part 1: Number Tools
+- Validates a number with AT LEAST 4 decimals (e.g., 1.2345).
+- If valid, shows:
+  • Nearest integer 
+  • Square root rounded to integer 
+  • Rounded to tenths / hundredths / thousandths 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="CIS 114 - HW6 Part 1 (Objects: Math and Number)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW6 – Part 1 (Number Tools)</title>
+  <style>
+    :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
+    html,body{height:100%;margin:0}
+     *,*::before,*::after{box-sizing:border-box}
+
+    body{
+        font-family:Arial,sans-serif;
+        color:#000;background:#fff;
+        padding:24px;position:relative;overflow-x:hidden
+    }
+
+    body::before{content:"";position:fixed;inset:0;
+        background:url("desk-art.png") no-repeat right bottom/var(--bgSize);
+        z-index:-2;pointer-events:none}
+     
+    body::after{content:"";position:fixed;inset:0;
+        background:rgba(255,255,255,.18);
+        z-index:-1;pointer-events:none}
+
+    h1{margin:0 0 12px}
+    nav a{display:inline-block;margin:6px 8px 16px 0;padding:10px 14px;
+        background:var(--btn);color:#fff;text-decoration:none;border-radius:6px;
+        transition:background-color .2s}
+    nav a:hover{background:var(--btnHover)}
+    form{background:rgba(255,255,255,.85);padding:16px;border-radius:10px;
+        max-width:700px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .row{display:flex;gap:10px;align-items:center;margin:8px 0}
+    label{font-weight:700}
+    input[type="text"]{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:240px}
+    .buttons{display:flex;gap:10px;margin-top:10px}
+    button{padding:10px 14px;border:none;border-radius:6px;cursor:pointer;background:var(--btn);
+        color:#fff;transition:background-color .2s}
+    button:hover{background:var(--btnHover)}
+    #out{margin-top:14px;padding:12px;background:#f7f7f7;border-radius:8px;white-space:pre-line}
+    .error{color:#b00020;font-weight:700}
+    @media (max-width:1024px){:root{--bgSize:500px auto}}
+    @media (max-width:768px){:root{--bgSize:350px auto}}
+    @media (max-width:480px){:root{--bgSize:250px auto} body::before{position:absolute}}
+  </style>
+</head>
+<body>
+  <h1>Number Tools</h1>
+
+  <nav aria-label="HW6 navigation">
+    <a href="hw6.html">← HW6 Home</a>
+    <a href="index.html">Homework 1 (Course Home)</a>
+  </nav>
+
+  <form id="frm" novalidate>
+    <div class="row">
+      <label for="num">Number (≥ 4 decimals):</label>
+      <input id="num" name="num" type="text" inputmode="decimal" placeholder="e.g., 4.3264">
+    </div>
+    <div class="buttons">
+      <button type="button" id="go">Process</button>
+      <button type="button" id="clear">Clear</button>
+    </div>
+  </form>
+
+  <div id="out" aria-live="polite"></div>
+
+  <script>
+    // Validate that the raw string looks like a number with at least 4 decimals.
+    var DECIMAL_4PLUS = /^[+-]?(?:\d+)(?:\.(\d{4,}))$/;
+
+    function show(msg, isError){
+      document.getElementById('out').innerHTML = isError
+        ? '<p class="error">'+msg+'</p>' : msg;
+    }
+
+    document.getElementById('go').addEventListener('click', function(){
+      var raw = document.getElementById('num').value.trim();
+
+      // 1) Quick format check: must have a decimal point with >= 4 digits after it
+      var m = DECIMAL_4PLUS.exec(raw);
+      if(!m){
+        show('You need to type a number with at least 4 decimals, please try again.', true);
+        return;
+      }
+
+      // 2) Now parse as float 
+      var n = parseFloat(raw);
+      if(!isFinite(n)){
+        show('Invalid number. Please try again.', true);
+        return;
+      }
+
+      // 3) Calculations 
+      var roundedInt     = Math.round(n);
+      var sqrtRoundedInt = Math.round(Math.sqrt(n));
+      var tenths         = Math.round(n * 10)   / 10;
+      var hundredths     = Math.round(n * 100)  / 100;
+      var thousandths    = Math.round(n * 1000) / 1000;
+
+      // 4) Presentation
+      var out =
+        "You typed number " + raw + "\n" +
+        "Rounded to the nearest integer = " + roundedInt + "\n" +
+        "Square root rounded to integer = " + sqrtRoundedInt + "\n" +
+        "Rounded to the nearest 10th position = " + tenths.toFixed(1) + "\n" +
+        "Rounded to the nearest 100th position = " + hundredths.toFixed(2) + "\n" +
+        "Rounded to the nearest 1000th position = " + thousandths.toFixed(3);
+
+      show(out, false);
+    });
+
+    document.getElementById('clear').addEventListener('click', function(){
+      document.getElementById('num').value = "";
+      show("");
+      document.getElementById('num').focus();
+    });
+  </script>
+</body>
+</html>
