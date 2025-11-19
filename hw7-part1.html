@@ -1,0 +1,135 @@
+<!--
+HW7 – Part 1: Style Chooser
+- Form controls:
+  • radio group: background color (at least 2 options)
+  • checkboxes: underline, bold, italic (any combination)
+  • select: font-size choices (relative units)
+- Styles apply immediately on change.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="CIS 114 - HW7 Part 1 (Object Model: live styling)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW7 – Part 1 (Live Style Chooser)</title>
+  <style>
+    :root { --btn:#4b3f4e; --btnHover:#6a5d6e; --bgSize:640px auto; }
+    html,body{height:100%;margin:0} *,*::before,*::after{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;color:#000;
+        background:#fff;padding:24px;position:relative;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;
+        background:url("desk-art.png") no-repeat right bottom/var(--bgSize);z-index:-2;pointer-events:none}
+    body::after{content:"";position:fixed;inset:0;
+        background:rgba(255,255,255,.18);z-index:-1;pointer-events:none}
+    h1{margin:0 0 12px}
+    nav a{display:inline-block;margin:6px 8px 16px 0;padding:10px 14px;
+        background:var(--btn);color:#fff;text-decoration:none;border-radius:6px;transition:background-color .2s}
+    nav a:hover{background:var(--btnHover)}
+    .wrap{background:rgba(255,255,255,.85);padding:16px;border-radius:10px;max-width:900px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    fieldset{border:1px solid #ddd;border-radius:8px;margin:0 0 12px;padding:10px}
+    legend{font-weight:700}
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    #target{padding:16px;border-radius:8px}
+    #status{margin-top:10px;color:#444}
+    @media (max-width:1024px){:root{--bgSize:500px auto}}
+    @media (max-width:768px){:root{--bgSize:350px auto}}
+    @media (max-width:480px){:root{--bgSize:250px auto} body::before{position:absolute}}
+  </style>
+</head>
+<body>
+  <h1>Live Style Chooser</h1>
+
+  <nav aria-label="HW7 navigation">
+    <a href="hw7.html">← HW7 Home</a>
+    <a href="index.html">Homework 1 (Course Home)</a>
+  </nav>
+
+  <section class="wrap">
+    <!-- Target content that will receive styles -->
+  <main id="target" aria-label="Sample content">
+    <p>This area will change style as you adjust the form above. Try selecting a background color or text effect to see it update instantly.</p>
+    <p>You can combine multiple effects, such as bold and italic, and they’ll stay active until you uncheck them. The font size will also update automatically from the dropdown list.</p>
+    <p>This demonstrates how JavaScript interacts with the DOM (Document Object Model) to modify CSS properties in real time, without needing to reload the page.</p>
+  </main>
+
+
+    <!-- Controls (apply immediately) -->
+    <form id="styler" class="controls" aria-label="Style controls" novalidate>
+      <fieldset>
+        <legend>Background color</legend>
+        <label><input type="radio" name="bg" value="#fff" checked> White</label><br>
+        <label><input type="radio" name="bg" value="#fff6d1"> Light Yellow</label><br>
+        <label><input type="radio" name="bg" value="#eef6ff"> Light Blue</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Text effects</legend>
+        <label><input type="checkbox" id="bold"> Bold</label><br>
+        <label><input type="checkbox" id="italic"> Italic</label><br>
+        <label><input type="checkbox" id="underline"> Underline</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Font size</legend>
+        <label class="visually-hidden" for="size">Font size</label>
+        <select id="size">
+          <option value="90%">90%</option>
+          <option value="100%" selected>100%</option>
+          <option value="115%">115%</option>
+          <option value="130%">130%</option>
+        </select>
+      </fieldset>
+    </form>
+
+    <p id="status" aria-live="polite"></p>
+  </section>
+
+  <style>
+    /* small utility for a11y-only labels if needed in future */
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
+  </style>
+
+  <script>
+    // Cache references
+    var target = document.getElementById('target');
+    var styler = document.getElementById('styler');
+    var status = document.getElementById('status');
+
+    // Apply all styles based on current control values
+    function applyStyles(){
+      // 1) Background from selected radio
+      var bg = styler.elements['bg'].value;
+      target.style.backgroundColor = bg;
+
+      // 2) Effects from checkboxes
+      var isBold = document.getElementById('bold').checked;
+      var isItalic = document.getElementById('italic').checked;
+      var isUnderline = document.getElementById('underline').checked;
+
+      target.style.fontWeight   = isBold ? '700' : '400';
+      target.style.fontStyle    = isItalic ? 'italic' : 'normal';
+      target.style.textDecoration = isUnderline ? 'underline' : 'none';
+
+      // 3) Font-size from select
+      var size = document.getElementById('size').value;
+      target.style.fontSize = size;
+
+      // 4) Simple live summary for the user (no alerts)
+      status.textContent = 'Applied → background: ' + bg +
+        ' | size: ' + size +
+        ' | bold: ' + (isBold?'on':'off') +
+        ' | italic: ' + (isItalic?'on':'off') +
+        ' | underline: ' + (isUnderline?'on':'off');
+    }
+
+    // Listen to any change in the form and apply immediately
+    styler.addEventListener('input', applyStyles);
+    styler.addEventListener('change', applyStyles);
+
+    // Initialize once on load
+    applyStyles();
+  </script>
+</body>
+</html>
