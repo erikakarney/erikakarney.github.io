@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Homework 8 – AJAX Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CIS 114 - Homework 8 AJAX example with XML CD catalog">
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 20px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 0.25rem 0 1rem;
+      text-decoration: none;
+      color: #004080;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #4b3f4e;
+      color: #fff;
+    }
+    button:hover {
+      background: #6a5d6e;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 1rem;
+      min-width: 260px;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 5px 8px;
+      text-align: left;
+    }
+    thead th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Homework 8 – AJAX Application</h1>
+
+  <nav aria-label="Course navigation">
+    <a href="index.html">← Homework 1 (Course Home)</a>
+  </nav>
+
+  <p>
+    Click the button below to load the CD catalog from the XML file and display it
+    as a table using AJAX.
+  </p>
+
+  <button type="button" onclick="loadDoc()">Get CD collection</button>
+
+  <table id="demo" aria-label="CD collection from XML"></table>
+
+  <script>
+    function loadDoc() {
+      var xhttp = new XMLHttpRequest();
+
+      xhttp.onload = function () {
+        myFunction(this);
+      };
+
+      xhttp.open("GET", "cd_catalog.xml");
+
+      xhttp.send();
+    }
+
+
+    function myFunction(xml) {
+      var xmlDoc = xml.responseXML;
+
+      var cds = xmlDoc.getElementsByTagName("CD");
+
+      var table = "<thead><tr><th>Artist</th><th>Title</th></tr></thead><tbody>";
+
+      for (var i = 0; i < cds.length; i++) {
+        var artistNode = cds[i].getElementsByTagName("ARTIST")[0];
+        var titleNode  = cds[i].getElementsByTagName("TITLE")[0];
+
+        var artistText = artistNode.childNodes[0].nodeValue;
+        var titleText  = titleNode.childNodes[0].nodeValue;
+
+        table += "<tr><td>" + artistText + "</td><td>" + titleText + "</td></tr>";
+      }
+
+      table += "</tbody>";
+
+      document.getElementById("demo").innerHTML = table;
+    }
+  </script>
+
+  <h2>Explanation of AJAX</h2>
+  <p>
+    In this example, the JavaScript uses <code>XMLHttpRequest</code> to load
+    the <code>cd_catalog.xml</code> file from the server without reloading
+    the entire page. When you click the button, the
+    <code>loadDoc()</code> function runs. It creates a new
+    <code>XMLHttpRequest</code> object, configures it with
+    <code>xhttp.open("GET", "cd_catalog.xml")</code>, and then calls
+    <code>xhttp.send()</code> to send the request.
+  </p>
+  <p>
+    The browser fetches the XML file in the background. When the response
+    is fully loaded, the <code>onload</code> handler runs and calls
+    <code>myFunction(this)</code>. Inside <code>myFunction</code>,
+    <code>xml.responseXML</code> gives us a parsed XML document. The
+    script uses <code>getElementsByTagName("CD")</code> to get all the CD
+    elements, loops through them, reads the ARTIST and TITLE for each CD,
+    and builds an HTML table as a string. Finally, it sets
+    <code>document.getElementById("demo").innerHTML</code> to that table
+    string so the user sees the CD collection appear on the page.
+  </p>
+
+  <h2>REST API: OpenWeatherMap</h2>
+  <p>
+    For my REST API example, I chose the <strong>OpenWeatherMap</strong> API.
+    It provides current weather, forecasts, and other meteorological data
+    for locations all over the world. The API is accessed via standard HTTP
+    requests and returns data in machine-readable formats such as JSON or XML,
+    which makes it easy to use from JavaScript, mobile apps, or backend
+    services. :contentReference[oaicite:0]{index=0}
+  </p>
+  <p>
+    To use OpenWeatherMap, developers create a free account and obtain an API
+    key. That key is included as a query parameter in each request (for example,
+    <code>?appid=YOUR_API_KEY</code>), and the service uses it to authenticate
+    and track usage. There is a free tier with limited request quotas, and
+    higher-usage paid plans that charge based on the specific products and the
+    number of API calls per month. This model lets small projects experiment at
+    low cost while larger companies can pay for higher throughput and more
+    advanced data sets. :contentReference[oaicite:1]{index=1}
+  </p>
+  <p>
+    One practical example for our class would be building a small page that
+    shows the current temperature and weather description for a city typed by
+    the user. Our JavaScript could send a request to the “Current Weather Data”
+    endpoint, parse the JSON response, and then update the page with a nicely
+    formatted result—very similar to how we used AJAX here to transform XML
+    into a table.
+  </p>
+  <p>
+    Developers can find detailed information about endpoints, parameters,
+    examples, and limits in the official
+    <a href="https://openweathermap.org/api" target="_blank" rel="noopener">
+      OpenWeatherMap API documentation
+    </a>.
+  </p>
+</body>
+</html>
